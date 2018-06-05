@@ -12,7 +12,8 @@ ref class Board
 public:
 	Board();
 	void Draw(Graphics^ g);
+	static int getBoard(float x, float y);
 private:
-	int **map;
+	static int **map;
 };
 
