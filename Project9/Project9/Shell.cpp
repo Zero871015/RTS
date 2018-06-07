@@ -25,18 +25,20 @@ Shell::~Shell()
 
 void Shell::Draw(Graphics ^ g)
 {
+	float X = this->location->X * 20;
+	float Y = this->location->Y * 20;
 	//µe¶ê
 	float size = 10;
 	g->FillPie(Brushes::Black,
-		this->location->X - size / 2,
-		this->location->Y - size / 2,
+		X - size / 2,
+		Y - size / 2,
 		size, size, 0.0, 360.0);
 	//µe¦W¦r
 	g->DrawString(this->name,
 		gcnew Font("Arial", 12),
 		Brushes::Black,
-		this->location->X + 10,
-		this->location->Y - 20);
+		X + 10,
+		Y - 20);
 }
 
 void Shell::Move()

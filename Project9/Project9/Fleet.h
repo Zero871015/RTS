@@ -13,6 +13,8 @@ public:
 	bool Fire(System::Collections::Generic::List<Shell^>^ list,PointF ^ location);
 	int whereAmI();
 	void setMove(float speed, float angle);
+	float getSheelSpeed();
+	PointF ^ getLocation();
 private:
 	System::String ^ name;	//船艦名字
 	int type;	//船艦種類(之後用繼承可能移除)

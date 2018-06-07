@@ -58,5 +58,5 @@ void Board::Draw(Graphics^ g)
 
 int Board::getBoard(float x, float y)
 {
-	return map[(int)x / 20][(int)y / 20];
+	return map[(int)x][(int)y];
 }

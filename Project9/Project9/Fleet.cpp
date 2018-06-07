@@ -4,24 +4,24 @@
 
 Fleet::Fleet()
 {
-	this->name = "Monika";
-	this->location = gcnew PointF(50, 50);
-	this->maxSpeed = 1;
-	this->sheelSpeed = 5;
+	this->name = "GG";
+	this->location = gcnew PointF(2, 2);
+	this->maxSpeed = (float)0.1;
+	this->sheelSpeed = (float)0.1;
 }
 
 Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
 {
 	this->name = name;
 	this->location = gcnew PointF(location->X,location->Y);
-	this->maxSpeed = 1;
-	this->sheelSpeed = 5;
+	this->maxSpeed = (float)0.1;
+	this->sheelSpeed = (float)0.1;
 }
 
 void Fleet::Draw(Graphics ^ g)
 {
-	float X = this->location->X;
-	float Y = this->location->Y;
+	float X = this->location->X*20;
+	float Y = this->location->Y*20;
 	float size = 10;
 	//µe¤T¨¤§Î
 	array<PointF>^ curvePoints = { PointF(X,Y - size),
@@ -89,4 +89,14 @@ void Fleet::setMove(float speed, float angle)
 	}
 	this->speed = speed;
 	this->angle = angle;
+}
+
+float Fleet::getSheelSpeed()
+{
+	return this->sheelSpeed;
+}
+
+PointF ^ Fleet::getLocation()
+{
+	return this->location;
 }
