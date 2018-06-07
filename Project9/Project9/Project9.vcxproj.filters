@@ -30,6 +30,18 @@
     <ClCompile Include="Team.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="BB.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="CarrierVessel.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="Destroyer.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="FlyingMissileCruiser.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyForm.h">
@@ -45,6 +57,18 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Team.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="BB.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="CarrierVessel.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Destroyer.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="FlyingMissileCruiser.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

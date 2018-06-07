@@ -15,7 +15,7 @@ public:
 	void setMove(float speed, float angle);
 	float getSheelSpeed();
 	PointF ^ getLocation();
-private:
+protected:
 	System::String ^ name;	//船艦名字
 	int type;	//船艦種類(之後用繼承可能移除)
 	System::Drawing::PointF ^ location;	//目前位置
