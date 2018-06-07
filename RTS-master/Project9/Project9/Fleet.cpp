@@ -37,7 +37,7 @@ void Fleet::Draw(Graphics ^ g)
 		Y - 20);
 
 	//測試用，標示出中心點
-	g->DrawLine(Pens::Red, this->location->X, this->location->Y, this->location->X + 1, this->location->Y + 1);
+	g->DrawLine(Pens::Red, X, Y, X, Y+1);
 }
 
 void Fleet::Move()
