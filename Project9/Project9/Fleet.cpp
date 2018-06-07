@@ -10,6 +10,14 @@ Fleet::Fleet()
 	this->sheelSpeed = 5;
 }
 
+Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
+{
+	this->name = name;
+	this->location = gcnew PointF(location->X,location->Y);
+	this->maxSpeed = 1;
+	this->sheelSpeed = 5;
+}
+
 void Fleet::Draw(Graphics ^ g)
 {
 	float X = this->location->X;
@@ -59,7 +67,7 @@ bool Fleet::Fire(System::Collections::Generic::List<Shell^>^ list, PointF ^ loca
 	//新增砲彈，距離不夠要回傳false(還沒做)
 	System::String ^ name;
 	name = "Shell";
-	name += list->Count;
+	name += Shell::ID;
 	Shell ^temp = gcnew Shell(name, sheelSpeed, this->location, location);
 	list->Add(temp);
 	return true;

@@ -15,6 +15,12 @@ Shell::Shell(System::String ^ ID, float speed, System::Drawing::PointF ^ pos, Sy
 	//不可以直接指派pos的值，否則指標一樣，船隻和砲彈的座標就會變同一個記憶體存儲。
 	this->location = gcnew PointF(pos->X, pos->Y);
 	this->targetLocation = target;
+	this->isBoom = false;
+	this->ID++;
+}
+
+Shell::~Shell()
+{
 }
 
 void Shell::Draw(Graphics ^ g)
@@ -44,7 +50,7 @@ void Shell::Move()
 	if (X * X + Y * Y < this->speed * this->speed)
 	{
 		this->location = this->targetLocation;
-		//this->Boom();
+		this->isBoom = true;
 	}
 	//還沒到點，移動分量
 	else
@@ -52,4 +58,9 @@ void Shell::Move()
 		this->location->X += this->speed * X / D;
 		this->location->Y += this->speed * Y / D;
 	}
+}
+
+bool Shell::getIsBoom()
+{
+	return this->isBoom;
 }

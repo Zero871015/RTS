@@ -7,6 +7,7 @@ ref class Fleet
 {
 public:
 	Fleet();
+	Fleet(System::String ^ name, System::Drawing::PointF ^ location);
 	void Draw(Graphics^ g);
 	void Move();
 	bool Fire(System::Collections::Generic::List<Shell^>^ list,PointF ^ location);

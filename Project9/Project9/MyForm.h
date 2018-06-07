@@ -1,6 +1,7 @@
 #pragma once
 #include "Board.h"
 #include "Fleet.h"
+#include "Team.h"
 
 //遊戲視窗大小
 #define W 1080
@@ -35,8 +36,9 @@ namespace Project9 {
 	private: Graphics ^ g;
 	private: System::Windows::Forms::GroupBox^  groupBox1;
 	private: System::Windows::Forms::TextBox^  textBox1;
-	private: Fleet myFleet;
 	private: System::Collections::Generic::List<Shell^>^ shellList;
+	private: System::Collections::Generic::List<Shell^>^ bufferShellList;
+	private: Team team1, team2;
 	public:
 
 	protected:
@@ -122,8 +124,12 @@ namespace Project9 {
 			g = Graphics::FromImage(bitmap);	//初始化畫布
 			this->ClientSize = System::Drawing::Size(W, H);	//調整遊戲視窗大小
 
-			static float angle = 270;		//測試設定船隻移動
-			myFleet.setMove(2.0, angle);
+
+			//測試隊伍新增船艦
+			team1.fleetList->Add(gcnew Fleet());
+			team1.fleetList[0]->setMove(2.0, 270);
+			team1.fleetList->Add(gcnew Fleet("Yori", PointF(200, 200)));
+			team1.fleetList[1]->setMove(2.0, 150);
 
 			//測試砲彈集合
 			shellList = gcnew System::Collections::Generic::List<Shell^>;
@@ -136,16 +142,29 @@ namespace Project9 {
 	}
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
-		
-		myFleet.Move();	//測試船移動
 
-		Random r;
-		if(r.Next(20)==0)
-			myFleet.Fire(shellList, gcnew PointF(150, 150));	//測試開砲
+		//迭代器讓所有船隻移動
+		for each (Fleet^ var in team1.fleetList)
+		{
+			var->Move();
+			Random r;
+			if (r.Next(20) == 0)
+				var->Fire(shellList, gcnew PointF(150, 150));	//測試開砲
+		}
+
+		
 		for each (Shell^ var in shellList)	//迭代器讓所有砲彈移動
 		{
 			var->Move();
 		}
+		bufferShellList = gcnew System::Collections::Generic::List<Shell^>(shellList);
+		for each (Shell^ var in shellList)	//迭代器讓所有定位砲彈消失(之後要加傷害)
+		{
+			if (var->getIsBoom())
+				bufferShellList->Remove(var);
+		}
+		shellList = bufferShellList;
+
 		UpdateCanvas();		//更新畫布
 		this->Refresh();	//call My_Form Paint
 	}
@@ -156,7 +175,11 @@ namespace Project9 {
 
 		myBoard.Draw(g);	//重畫地圖
 		
-		myFleet.Draw(g);	//畫船
+		//畫船
+		for each (Fleet ^ var in team1.fleetList)
+		{
+			var->Draw(g);
+		}
 
 		//畫砲
 		for each (Shell^ var in shellList)
