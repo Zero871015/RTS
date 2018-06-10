@@ -8,10 +8,11 @@ Shell::Shell()
 
 }
 
-Shell::Shell(System::String ^ ID, float speed, System::Drawing::PointF ^ pos, System::Drawing::PointF ^ target)
+Shell::Shell(System::String ^ ID, float speed,int damage, System::Drawing::PointF ^ pos, System::Drawing::PointF ^ target)
 {
 	this->name = ID;
 	this->speed = speed;
+	this->damage = damage;
 	//不可以直接指派pos的值，否則指標一樣，船隻和砲彈的座標就會變同一個記憶體存儲。
 	this->location = gcnew PointF(pos->X, pos->Y);
 	this->targetLocation = target;
@@ -27,6 +28,24 @@ void Shell::Draw(Graphics ^ g)
 {
 	float X = this->location->X * 20;
 	float Y = this->location->Y * 20;
+	float dis = sqrt(powf((this->location->X - this->targetLocation->X), 2)+
+		powf((this->location->Y - this->targetLocation->Y), 2));
+
+	SolidBrush ^ b;
+	if (dis > 5)
+	{
+		b = gcnew SolidBrush(Color::FromArgb(0, 0, 0, 0));
+	}
+	else
+	{
+		b = gcnew SolidBrush(Color::FromArgb((int)((5 - dis) * 30), (int)((5 - dis) * 51), 0, 0));
+	}
+	//畫出警告區域
+	g->FillPie(b,
+		this->targetLocation->X*20 - 30,
+		this->targetLocation->Y*20 - 30,
+		60.0, 60.0, 0.0, 360.0);
+
 	//畫圓
 	float size = 10;
 	g->FillPie(Brushes::Black,
@@ -65,4 +84,19 @@ void Shell::Move()
 bool Shell::getIsBoom()
 {
 	return this->isBoom;
+}
+
+int Shell::getDamage()
+{
+	return this->damage;
+}
+
+PointF ^ Shell::getLocation()
+{
+	return this->location;
+}
+
+System::String ^ Shell::getName()
+{
+	return this->name;
 }

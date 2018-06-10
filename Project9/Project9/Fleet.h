@@ -10,11 +10,15 @@ public:
 	Fleet(System::String ^ name, System::Drawing::PointF ^ location);
 	void Draw(Graphics^ g);
 	void Move();
-	bool Fire(System::Collections::Generic::List<Shell^>^ list,PointF ^ location);
+	bool Fire(System::Collections::Generic::List<Shell^>^ list, System::String ^,PointF ^ location);
 	int whereAmI();
 	void setMove(float speed, float angle);
 	float getSheelSpeed();
+	void setName(System::String ^);
 	PointF ^ getLocation();
+	void setHP(int);
+	int getHP();
+	bool Defense(System::String ^ shellName, System::Collections::Generic::List<Shell^>^ list);
 protected:
 	System::String ^ name;	//船艦名字
 	int type;	//船艦種類(之後用繼承可能移除)

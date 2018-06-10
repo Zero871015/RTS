@@ -62,13 +62,10 @@ void Fleet::Move()
 	}
 }
 
-bool Fleet::Fire(System::Collections::Generic::List<Shell^>^ list, PointF ^ location)
+bool Fleet::Fire(System::Collections::Generic::List<Shell^>^ list, System::String ^ name, PointF ^ location)
 {
 	//新增砲彈，距離不夠要回傳false(還沒做)
-	System::String ^ name;
-	name = "Shell";
-	name += Shell::ID;
-	Shell ^temp = gcnew Shell(name, sheelSpeed, this->location, location);
+	Shell ^temp = gcnew Shell(name, sheelSpeed,this->damage, this->location, location);
 	list->Add(temp);
 	return true;
 }
@@ -96,7 +93,35 @@ float Fleet::getSheelSpeed()
 	return this->sheelSpeed;
 }
 
+void Fleet::setName(System::String ^ name)
+{
+	this->name = name;
+}
+
 PointF ^ Fleet::getLocation()
 {
 	return this->location;
+}
+
+void Fleet::setHP(int hp)
+{
+	this->HP = hp;
+}
+
+int Fleet::getHP()
+{
+	return this->HP;
+}
+
+bool Fleet::Defense(System::String ^ shellName, System::Collections::Generic::List<Shell^>^ list)
+{
+	for each (auto var in list)
+	{
+		if (var->getName() == shellName)
+		{
+			list->Remove(var);
+			return true;
+		}
+	}
+	return false;
 }
