@@ -18,6 +18,7 @@ public:
 	PointF ^ getLocation();
 	void setHP(int);
 	int getHP();
+	void UpdataCD();
 	bool Defense(System::String ^ shellName, System::Collections::Generic::List<Shell^>^ list);
 protected:
 	System::String ^ name;	//船艦名字
@@ -30,8 +31,10 @@ protected:
 	float angle;	//目前移動角度
 	int maxAttackRange;	//船艦最大攻擊距離
 	int attackCD;	//攻擊冷卻
+	int attackCDNow;	//攻擊冷卻計數
 	int maxDefenseRange;	//船艦最大防禦距離
 	int defenseCD;	//防禦冷卻
+	int defenseCDNow;	//防禦冷卻計數
 	int damage;	//發射的砲彈傷害
 	float sheelSpeed;	//發射的砲彈速度
 };

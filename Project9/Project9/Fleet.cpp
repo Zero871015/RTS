@@ -8,6 +8,8 @@ Fleet::Fleet()
 	this->location = gcnew PointF(2, 2);
 	this->maxSpeed = (float)0.1;
 	this->sheelSpeed = (float)0.1;
+	this->attackCDNow = 0;
+	this->defenseCDNow = 0;
 }
 
 Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
@@ -16,6 +18,8 @@ Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
 	this->location = gcnew PointF(location->X,location->Y);
 	this->maxSpeed = (float)0.1;
 	this->sheelSpeed = (float)0.1;
+	this->attackCDNow = 0;
+	this->defenseCDNow = 0;
 }
 
 void Fleet::Draw(Graphics ^ g)
@@ -65,9 +69,18 @@ void Fleet::Move()
 bool Fleet::Fire(System::Collections::Generic::List<Shell^>^ list, System::String ^ name, PointF ^ location)
 {
 	//新增砲彈，距離不夠要回傳false(還沒做)
-	Shell ^temp = gcnew Shell(name, sheelSpeed,this->damage, this->location, location);
-	list->Add(temp);
-	return true;
+	if (this->attackCDNow <= 0)
+	{
+		Shell ^temp = gcnew Shell(name, sheelSpeed,this->damage, this->location, location);
+		list->Add(temp);
+		this->attackCDNow = this->attackCD;
+		return true;
+	}
+	else
+	{
+		System::Diagnostics::Debug::WriteLine("攻擊冷卻中");
+		return false;
+	}
 }
 
 int Fleet::whereAmI()
@@ -113,15 +126,29 @@ int Fleet::getHP()
 	return this->HP;
 }
 
+void Fleet::UpdataCD()
+{
+	this->attackCDNow--;
+	this->defenseCDNow--;
+}
+
 bool Fleet::Defense(System::String ^ shellName, System::Collections::Generic::List<Shell^>^ list)
 {
-	for each (auto var in list)
+	if (this->defenseCDNow <= 0)
 	{
-		if (var->getName() == shellName)
+		this->defenseCDNow = this->defenseCD;
+		for each (auto var in list)
 		{
-			list->Remove(var);
-			return true;
+			if (var->getName() == shellName)
+			{
+				list->Remove(var);
+				return true;
+			}
 		}
+	}
+	else
+	{
+		System::Diagnostics::Debug::WriteLine("防禦冷卻中");
 	}
 	return false;
 }

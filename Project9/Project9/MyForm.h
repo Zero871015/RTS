@@ -44,6 +44,7 @@ namespace Project9 {
 	private: Team team1, team2;
 	private: System::Windows::Forms::Button^  BtnStart;
 	private: System::Windows::Forms::TextBox^  textBox2;
+	private: System::Windows::Forms::Label^  lblTime;
 	private: System::Windows::Forms::Button^  BtnPause;
 	public:
 
@@ -81,6 +82,7 @@ namespace Project9 {
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->BtnStart = (gcnew System::Windows::Forms::Button());
 			this->BtnPause = (gcnew System::Windows::Forms::Button());
+			this->lblTime = (gcnew System::Windows::Forms::Label());
 			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -143,11 +145,24 @@ namespace Project9 {
 			this->BtnPause->UseVisualStyleBackColor = true;
 			this->BtnPause->Click += gcnew System::EventHandler(this, &MyForm::BtnPause_Click);
 			// 
+			// lblTime
+			// 
+			this->lblTime->BackColor = System::Drawing::SystemColors::ActiveCaption;
+			this->lblTime->Font = (gcnew System::Drawing::Font(L"Ink Free", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->lblTime->Location = System::Drawing::Point(1066, 25);
+			this->lblTime->Name = L"lblTime";
+			this->lblTime->Size = System::Drawing::Size(222, 73);
+			this->lblTime->TabIndex = 3;
+			this->lblTime->Text = L"00:00";
+			this->lblTime->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1300, 1041);
+			this->Controls->Add(this->lblTime);
 			this->Controls->Add(this->BtnPause);
 			this->Controls->Add(this->BtnStart);
 			this->Controls->Add(this->groupBox1);
@@ -170,13 +185,8 @@ namespace Project9 {
 			g = Graphics::FromImage(bitmap);	//初始化畫布
 			this->ClientSize = System::Drawing::Size(W, H);	//調整遊戲視窗大小
 
-
-			//測試隊伍新增船艦
-			team1.fleetList->Add("GG",gcnew Fleet());
-			team1.fleetList["GG"]->setMove(2.0, 270);
-			team1.fleetList->Add("DAGG",gcnew Fleet("DAGG", PointF(15, 15)));
-			team1.fleetList["DAGG"]->setMove(2.0, 150);
-
+			UpdateCanvas();		//更新畫布
+			this->Refresh();	//call My_Form Paint
 		}
 
 		void ReadCommand(System::Windows::Forms::TextBox ^ textBox,Team ^ team)
@@ -222,26 +232,26 @@ namespace Project9 {
 						if (words[2] == "CV")
 						{
 							team->fleetList->Add(words[1], gcnew CarrierVessel(words[1],
-								gcnew PointF(float::Parse(words[3]),
-									float::Parse(words[4]))));
+								gcnew PointF(float::Parse(words[3]) + 1,
+									float::Parse(words[4]) + 1)));
 						}
 						else if (words[2] == "BB")
 						{
 							team->fleetList->Add(words[1], gcnew BB(words[1],
-								gcnew PointF(float::Parse(words[3]),
-									float::Parse(words[4]))));
+								gcnew PointF(float::Parse(words[3]) + 1,
+									float::Parse(words[4]) + 1)));
 						}
 						else if (words[2] == "CG")
 						{
 							team->fleetList->Add(words[1], gcnew FlyingMissileCruiser(words[1],
-								gcnew PointF(float::Parse(words[3]),
-									float::Parse(words[4]))));
+								gcnew PointF(float::Parse(words[3]) + 1,
+									float::Parse(words[4]) + 1)));
 						}
 						else if (words[2] == "DD")
 						{
 							team->fleetList->Add(words[1], gcnew Destroyer(words[1],
-								gcnew PointF(float::Parse(words[3]),
-									float::Parse(words[4]))));
+								gcnew PointF(float::Parse(words[3]) + 1,
+									float::Parse(words[4]) + 1)));
 						}
 						else
 						{
@@ -267,7 +277,7 @@ namespace Project9 {
 							
 							team->fleetList[words[1]]->Fire(team->shellList,
 								"Sheel" + textBox->Tag + team->count,
-								gcnew PointF(float::Parse(words[2]), float::Parse(words[3])));
+								gcnew PointF(float::Parse(words[2]) + 1, float::Parse(words[3]) + 1));
 							team->count++;
 						}
 						else
@@ -358,6 +368,30 @@ namespace Project9 {
 	}
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
+		//計數器顯示
+		static int S = 0;
+		static int M = 0;
+		S++;
+		if (S > 59)
+		{
+			S = 0;
+			M++;
+		}
+		if (M < 10)lblTime->Text = "0";
+		else lblTime->Text = "";
+		lblTime->Text += M + ":";
+		if (S < 10)lblTime->Text += "0";
+		lblTime->Text += S;
+
+		//更新所有船艦冷卻時間
+		for each (auto var in team1.fleetList)
+		{
+			var.Value->UpdataCD();
+		}
+		for each (auto var in team2.fleetList)
+		{
+			var.Value->UpdataCD();
+		}
 
 		//迭代器讓所有船隻移動
 		for each (auto var in team1.fleetList)
@@ -369,18 +403,20 @@ namespace Project9 {
 			var.Value->Move();
 		}
 		
-		for each (Shell^ var in team1.shellList)	//迭代器讓所有砲彈移動
+		//迭代器讓所有砲彈移動
+		for each (Shell^ var in team1.shellList)
 		{
 			var->Move();
 		}
-		for each (Shell^ var in team2.shellList)	//迭代器讓所有砲彈移動
+		for each (Shell^ var in team2.shellList)	
 		{
 			var->Move();
 		}
 
 		team1.bufferShellList = gcnew System::Collections::Generic::List<Shell^>(team1.shellList);
 		team2.bufferShellList = gcnew System::Collections::Generic::List<Shell^>(team2.shellList);
-		for each (Shell^ var in team1.shellList)	//迭代器讓所有定位砲彈消失(之後要加傷害)
+		//若是砲彈到達定位，爆炸並造成傷害
+		for each (Shell^ var in team1.shellList)
 		{
 			if (var->getIsBoom())
 			{
@@ -394,16 +430,69 @@ namespace Project9 {
 						System::Diagnostics::Debug::WriteLine("擊中船艦");
 					}
 				}
+				for each (auto fleet in team2.fleetList)
+				{
+					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
+						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
+					if (dis < 1.5)
+					{
+						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
+						System::Diagnostics::Debug::WriteLine("擊中船艦");
+					}
+				}
 				team1.bufferShellList->Remove(var);
 			}
 		}
-		for each (Shell^ var in team2.shellList)	//迭代器讓所有定位砲彈消失(之後要加傷害)
+		for each (Shell^ var in team2.shellList)
 		{
 			if (var->getIsBoom())
+			{
+				for each (auto fleet in team1.fleetList)
+				{
+					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
+						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
+					if (dis < 1.5)
+					{
+						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
+						System::Diagnostics::Debug::WriteLine("擊中船艦");
+					}
+				}
+				for each (auto fleet in team2.fleetList)
+				{
+					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
+						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
+					if (dis < 1.5)
+					{
+						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
+						System::Diagnostics::Debug::WriteLine("擊中船艦");
+					}
+				}
 				team2.bufferShellList->Remove(var);
+			}
 		}
 		team1.shellList = team1.bufferShellList;
 		team2.shellList = team2.bufferShellList;
+		
+		System::Collections::Generic::Dictionary<System::String ^, Fleet ^>^ temp;
+		//檢查是否有船艦被擊沉
+		temp = gcnew System::Collections::Generic::Dictionary<System::String ^, Fleet ^>(team1.fleetList);
+		for each (auto var in temp)
+		{
+			if (var.Value->getHP() <= 0)
+			{
+				team1.fleetList->Remove(var.Key);
+				System::Diagnostics::Debug::WriteLine("船艦被擊沉");
+			}
+		}
+		temp = gcnew System::Collections::Generic::Dictionary<System::String ^, Fleet ^>(team2.fleetList);
+		for each (auto var in temp)
+		{
+			if (var.Value->getHP() <= 0)
+			{
+				team2.fleetList->Remove(var.Key);
+				System::Diagnostics::Debug::WriteLine("船艦被擊沉");
+			}
+		}
 
 		UpdateCanvas();		//更新畫布
 		this->Refresh();	//call My_Form Paint
