@@ -20,6 +20,7 @@ public:
 	int getHP();
 	void UpdataCD();
 	bool Defense(System::String ^ shellName, System::Collections::Generic::List<Shell^>^ list);
+	void SetDefenseCD();
 protected:
 	System::String ^ name;	//船艦名字
 	int type;	//船艦種類(之後用繼承可能移除)

@@ -45,6 +45,8 @@ namespace Project9 {
 	private: System::Windows::Forms::Button^  BtnStart;
 	private: System::Windows::Forms::TextBox^  textBox2;
 	private: System::Windows::Forms::Label^  lblTime;
+	private: System::Windows::Forms::TextBox^  Log;
+
 	private: System::Windows::Forms::Button^  BtnPause;
 	public:
 
@@ -83,6 +85,7 @@ namespace Project9 {
 			this->BtnStart = (gcnew System::Windows::Forms::Button());
 			this->BtnPause = (gcnew System::Windows::Forms::Button());
 			this->lblTime = (gcnew System::Windows::Forms::Label());
+			this->Log = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -95,7 +98,9 @@ namespace Project9 {
 			// 
 			this->groupBox1->Controls->Add(this->textBox2);
 			this->groupBox1->Controls->Add(this->textBox1);
-			this->groupBox1->Location = System::Drawing::Point(714, 12);
+			this->groupBox1->Font = (gcnew System::Drawing::Font(L"華康秀風體W3", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(136)));
+			this->groupBox1->Location = System::Drawing::Point(661, 12);
 			this->groupBox1->Name = L"groupBox1";
 			this->groupBox1->Size = System::Drawing::Size(292, 834);
 			this->groupBox1->TabIndex = 0;
@@ -126,9 +131,11 @@ namespace Project9 {
 			// 
 			// BtnStart
 			// 
-			this->BtnStart->Location = System::Drawing::Point(453, 806);
+			this->BtnStart->Font = (gcnew System::Drawing::Font(L"Impact", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->BtnStart->Location = System::Drawing::Point(30, 749);
 			this->BtnStart->Name = L"BtnStart";
-			this->BtnStart->Size = System::Drawing::Size(75, 23);
+			this->BtnStart->Size = System::Drawing::Size(285, 80);
 			this->BtnStart->TabIndex = 1;
 			this->BtnStart->Text = L"Start";
 			this->BtnStart->UseVisualStyleBackColor = true;
@@ -137,9 +144,11 @@ namespace Project9 {
 			// BtnPause
 			// 
 			this->BtnPause->Enabled = false;
-			this->BtnPause->Location = System::Drawing::Point(563, 806);
+			this->BtnPause->Font = (gcnew System::Drawing::Font(L"Impact", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->BtnPause->Location = System::Drawing::Point(340, 749);
 			this->BtnPause->Name = L"BtnPause";
-			this->BtnPause->Size = System::Drawing::Size(75, 23);
+			this->BtnPause->Size = System::Drawing::Size(285, 80);
 			this->BtnPause->TabIndex = 2;
 			this->BtnPause->Text = L"Pause";
 			this->BtnPause->UseVisualStyleBackColor = true;
@@ -150,18 +159,31 @@ namespace Project9 {
 			this->lblTime->BackColor = System::Drawing::SystemColors::ActiveCaption;
 			this->lblTime->Font = (gcnew System::Drawing::Font(L"Ink Free", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->lblTime->Location = System::Drawing::Point(1066, 25);
+			this->lblTime->Location = System::Drawing::Point(1083, 36);
 			this->lblTime->Name = L"lblTime";
 			this->lblTime->Size = System::Drawing::Size(222, 73);
 			this->lblTime->TabIndex = 3;
 			this->lblTime->Text = L"00:00";
 			this->lblTime->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
 			// 
+			// Log
+			// 
+			this->Log->Font = (gcnew System::Drawing::Font(L"新細明體", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->Log->Location = System::Drawing::Point(959, 130);
+			this->Log->Multiline = true;
+			this->Log->Name = L"Log";
+			this->Log->ReadOnly = true;
+			this->Log->Size = System::Drawing::Size(435, 700);
+			this->Log->TabIndex = 2;
+			this->Log->Tag = L"";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1300, 1041);
+			this->Controls->Add(this->Log);
 			this->Controls->Add(this->lblTime);
 			this->Controls->Add(this->BtnPause);
 			this->Controls->Add(this->BtnStart);
@@ -173,6 +195,7 @@ namespace Project9 {
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
 			this->ResumeLayout(false);
+			this->PerformLayout();
 
 		}
 #pragma endregion
@@ -217,7 +240,7 @@ namespace Project9 {
 			for each (System::String ^ var in lines)
 			{
 				array<System::String ^>^ words;
-				words=var->Split(' ',',');
+				words = var->Split(gcnew array<System::String ^>{" ",","},System::StringSplitOptions::RemoveEmptyEntries);
 				if (words->Length == 0)
 				{
 					System::Diagnostics::Debug::WriteLine("空的一行");
@@ -234,28 +257,38 @@ namespace Project9 {
 							team->fleetList->Add(words[1], gcnew CarrierVessel(words[1],
 								gcnew PointF(float::Parse(words[3]) + 1,
 									float::Parse(words[4]) + 1)));
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag+
+								" SET "+words[1]+" with CV at ("+words[3]+","+words[4]+") -> Success\r\n";
 						}
 						else if (words[2] == "BB")
 						{
 							team->fleetList->Add(words[1], gcnew BB(words[1],
 								gcnew PointF(float::Parse(words[3]) + 1,
 									float::Parse(words[4]) + 1)));
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								" SET " + words[1] + " with BB at (" + words[3] + "," + words[4] + ") -> Success\r\n";
 						}
 						else if (words[2] == "CG")
 						{
 							team->fleetList->Add(words[1], gcnew FlyingMissileCruiser(words[1],
 								gcnew PointF(float::Parse(words[3]) + 1,
 									float::Parse(words[4]) + 1)));
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								" SET " + words[1] + " with CG at (" + words[3] + "," + words[4] + ") -> Success\r\n";
 						}
 						else if (words[2] == "DD")
 						{
 							team->fleetList->Add(words[1], gcnew Destroyer(words[1],
 								gcnew PointF(float::Parse(words[3]) + 1,
 									float::Parse(words[4]) + 1)));
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								" SET " + words[1] + " with DD at (" + words[3] + "," + words[4] + ") -> Success\r\n";
 						}
 						else
 						{
 							System::Diagnostics::Debug::WriteLine("沒有這種船艦");
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								" SET " + words[1] + " with CV at (" + words[3] + "," + words[4] + ") -> Fail\r\n";
 							break;
 						}
 					}
@@ -275,10 +308,19 @@ namespace Project9 {
 							words[2]=words[2]->Remove(0,1);
 							words[3]=words[3]->Remove(words[3]->Length - 1,1);
 							
-							team->fleetList[words[1]]->Fire(team->shellList,
+							if (team->fleetList[words[1]]->Fire(team->shellList,
 								"Sheel" + textBox->Tag + team->count,
-								gcnew PointF(float::Parse(words[2]) + 1, float::Parse(words[3]) + 1));
-							team->count++;
+								gcnew PointF(float::Parse(words[2]) + 1, float::Parse(words[3]) + 1)))
+							{
+								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+									" "+words[1] + " Fire to (" + words[2] + "," + words[3] + ") -> "+ "Sheel" + textBox->Tag + team->count +"\r\n";
+								team->count++;
+							}
+							else
+							{
+								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+									" " + words[1] + " Fire to (" + words[2] + "," + words[3] + ") -> Fail\r\n";
+							}
 						}
 						else
 						{
@@ -301,11 +343,22 @@ namespace Project9 {
 							isFound = team->fleetList[words[1]]->Defense(words[2], team1.shellList);
 							if(!isFound)
 								isFound = team->fleetList[words[1]]->Defense(words[2], team2.shellList);
-							if(!isFound)
-								System::Diagnostics::Debug::WriteLine("找不到此砲彈");
+							team->fleetList[words[1]]->SetDefenseCD();
+							if (isFound)
+							{
+								Log->Text += "[" + lblTime->Text + "] " + words[1] +
+									" Defense " + words[2] + " -> Hit\r\n";
+							}
+							else
+							{
+								Log->Text += "[" + lblTime->Text + "] " + words[1] +
+									" Defense " + words[2] + " -> Fail\r\n";
+							}
 						}
 						else
 						{
+							Log->Text += "[" + lblTime->Text + "] " + words[1] +
+								" Defense " + words[2] + " -> Fail\r\n";
 							System::Diagnostics::Debug::WriteLine("找不到此船艦");
 						}
 					}
@@ -326,9 +379,13 @@ namespace Project9 {
 							temp->setName(words[2]);
 							team->fleetList->Add(words[2],temp);
 							team->fleetList->Remove(words[1]);
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								" Rename " + words[1] + " to " + words[2] + " -> Success\r\n";
 						}
 						else
 						{
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								" Rename " + words[1] + " to " + words[2] + " -> Fail\r\n";
 							System::Diagnostics::Debug::WriteLine("取名失敗");
 							break;
 						}
@@ -346,15 +403,19 @@ namespace Project9 {
 						if (team->fleetList->ContainsKey(words[1]))
 						{
 							team->fleetList[words[1]]->setMove(float::Parse(words[2]), float::Parse(words[3]));
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								words[1] + " Move to " + words[2] + " as " + words[3] + " -> Success\r\n";
 						}
 						else
 						{
+							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								words[1] + " Move to " + words[2] + " as " + words[3] + " -> Fail\r\n";
 							System::Diagnostics::Debug::WriteLine("找不到此船艦");
 						}
 					}
 					else
 					{
-						System::Diagnostics::Debug::WriteLine("取名失敗");
+						System::Diagnostics::Debug::WriteLine("指令錯誤");
 						break;
 					}
 				}
@@ -364,7 +425,7 @@ namespace Project9 {
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e) {
 	}
 	private: System::Void MyForm_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
-		e->Graphics->DrawImage(bitmap, 50, 100);	//實際畫在視窗上
+		e->Graphics->DrawImage(bitmap, 20, 100);	//實際畫在視窗上
 	}
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
@@ -534,6 +595,9 @@ namespace Project9 {
 		textBox2->ReadOnly = true;
 	}
 	private: System::Void BtnPause_Click(System::Object^  sender, System::EventArgs^  e) {
+		textBox1->Text = "";
+		textBox2->Text = "";
+		
 		timer1->Enabled = false;
 		BtnStart->Enabled = true;
 		BtnPause->Enabled = false;

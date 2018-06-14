@@ -71,6 +71,14 @@ bool Fleet::Fire(System::Collections::Generic::List<Shell^>^ list, System::Strin
 	//新增砲彈，距離不夠要回傳false(還沒做)
 	if (this->attackCDNow <= 0)
 	{
+		if ((this->location->X - location->X)*(this->location->X - location->X) +
+			(this->location->Y - location->Y)*(this->location->Y - location->Y) >
+			this->maxAttackRange*this->maxAttackRange)
+		{
+			this->attackCDNow = this->attackCD;
+			System::Diagnostics::Debug::WriteLine("不在攻擊範圍內");
+			return false;
+		}
 		Shell ^temp = gcnew Shell(name, sheelSpeed,this->damage, this->location, location);
 		list->Add(temp);
 		this->attackCDNow = this->attackCD;
@@ -136,7 +144,6 @@ bool Fleet::Defense(System::String ^ shellName, System::Collections::Generic::Li
 {
 	if (this->defenseCDNow <= 0)
 	{
-		this->defenseCDNow = this->defenseCD;
 		for each (auto var in list)
 		{
 			if (var->getName() == shellName)
@@ -151,4 +158,9 @@ bool Fleet::Defense(System::String ^ shellName, System::Collections::Generic::Li
 		System::Diagnostics::Debug::WriteLine("防禦冷卻中");
 	}
 	return false;
+}
+
+void Fleet::SetDefenseCD()
+{
+	this->defenseCDNow = this->defenseCD;
 }
