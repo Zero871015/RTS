@@ -22,7 +22,7 @@ Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
 	this->defenseCDNow = 0;
 }
 
-void Fleet::Draw(Graphics ^ g)
+void Fleet::Draw(Graphics ^ g, System::Drawing::Color color)
 {
 	float X = this->location->X*20;
 	float Y = this->location->Y*20;
@@ -31,7 +31,7 @@ void Fleet::Draw(Graphics ^ g)
 	array<PointF>^ curvePoints = { PointF(X,Y - size),
 		PointF(X - size / 2 * sqrtf(3),Y + size / 2) ,
 		PointF(X + size / 2 * sqrtf(3),Y + size / 2) };
-	g->FillPolygon(Brushes::Black, curvePoints);
+	g->FillPolygon(gcnew SolidBrush(color), curvePoints);
 
 	//畫名字
 	g->DrawString(this->name,
@@ -39,9 +39,6 @@ void Fleet::Draw(Graphics ^ g)
 		Brushes::Black,
 		X + 10,
 		Y - 20);
-
-	//測試用，標示出中心點
-	g->DrawLine(Pens::Red, this->location->X, this->location->Y, this->location->X + 1, this->location->Y + 1);
 }
 
 void Fleet::Move()

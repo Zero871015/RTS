@@ -49,6 +49,13 @@ namespace Project9 {
 	private: System::Windows::Forms::TextBox^  Log;
 	private: System::Windows::Forms::Button^  BtnNextSec;
 	private: System::Windows::Forms::Button^  BtnClearLog;
+	private: System::Windows::Forms::ColorDialog^  colorDialogFleetA;
+	private: System::Windows::Forms::Button^  BtnColorA;
+	private: System::Windows::Forms::Button^  BtnColorB;
+
+
+
+	private: System::Windows::Forms::ColorDialog^  colorDialogFleetB;
 
 	private: System::Windows::Forms::Button^  BtnPause;
 	public:
@@ -91,6 +98,10 @@ namespace Project9 {
 			this->Log = (gcnew System::Windows::Forms::TextBox());
 			this->BtnNextSec = (gcnew System::Windows::Forms::Button());
 			this->BtnClearLog = (gcnew System::Windows::Forms::Button());
+			this->colorDialogFleetA = (gcnew System::Windows::Forms::ColorDialog());
+			this->BtnColorA = (gcnew System::Windows::Forms::Button());
+			this->BtnColorB = (gcnew System::Windows::Forms::Button());
+			this->colorDialogFleetB = (gcnew System::Windows::Forms::ColorDialog());
 			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -207,11 +218,33 @@ namespace Project9 {
 			this->BtnClearLog->UseVisualStyleBackColor = true;
 			this->BtnClearLog->Click += gcnew System::EventHandler(this, &MyForm::BtnClearLog_Click);
 			// 
+			// BtnColorA
+			// 
+			this->BtnColorA->Location = System::Drawing::Point(30, 23);
+			this->BtnColorA->Name = L"BtnColorA";
+			this->BtnColorA->Size = System::Drawing::Size(125, 45);
+			this->BtnColorA->TabIndex = 6;
+			this->BtnColorA->Text = L"Change TeamA Color";
+			this->BtnColorA->UseVisualStyleBackColor = true;
+			this->BtnColorA->Click += gcnew System::EventHandler(this, &MyForm::BtnColorFleetA_Click);
+			// 
+			// BtnColorB
+			// 
+			this->BtnColorB->Location = System::Drawing::Point(30, 74);
+			this->BtnColorB->Name = L"BtnColorB";
+			this->BtnColorB->Size = System::Drawing::Size(125, 45);
+			this->BtnColorB->TabIndex = 6;
+			this->BtnColorB->Text = L"Change TeamB Color";
+			this->BtnColorB->UseVisualStyleBackColor = true;
+			this->BtnColorB->Click += gcnew System::EventHandler(this, &MyForm::BtnColorFleetB_Click);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1486, 1041);
+			this->Controls->Add(this->BtnColorB);
+			this->Controls->Add(this->BtnColorA);
 			this->Controls->Add(this->BtnClearLog);
 			this->Controls->Add(this->BtnNextSec);
 			this->Controls->Add(this->Log);
@@ -692,11 +725,11 @@ namespace Project9 {
 							//畫船
 		for each (auto var in team1.fleetList)
 		{
-			var.Value->Draw(g);
+			var.Value->Draw(g, colorDialogFleetA->Color);
 		}
 		for each (auto var in team2.fleetList)
 		{
-			var.Value->Draw(g);
+			var.Value->Draw(g, colorDialogFleetB->Color);
 		}
 
 		//畫砲
@@ -732,6 +765,18 @@ namespace Project9 {
 	}
 	private: System::Void BtnClearLog_Click(System::Object^  sender, System::EventArgs^  e) {
 		Log->Text = "";
+	}
+	private: System::Void BtnColorFleetA_Click(System::Object^  sender, System::EventArgs^  e) {
+		if (colorDialogFleetA->ShowDialog() == ::System::Windows::Forms::DialogResult::OK)
+		{
+			System::Diagnostics::Debug::WriteLine("改變顏色");
+		}
+	}
+	private: System::Void BtnColorFleetB_Click(System::Object^  sender, System::EventArgs^  e) {
+		if (colorDialogFleetB->ShowDialog() == ::System::Windows::Forms::DialogResult::OK)
+		{
+			System::Diagnostics::Debug::WriteLine("改變顏色");
+		}
 	}
 };
 }
