@@ -11,6 +11,6 @@ CarrierVessel::CarrierVessel(System::String ^ name, System::Drawing::PointF ^ lo
 	this->maxDefenseRange = 5;
 	this->defenseCD = 15;
 	this->damage = 3;
-	this->sheelSpeed = (float)4.0/60;
+	this->shellSpeed = (float)4.0/60;
 	
 }

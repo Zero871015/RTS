@@ -13,7 +13,7 @@ public:
 	bool Fire(System::Collections::Generic::List<Shell^>^ list, System::String ^,PointF ^ location);
 	int whereAmI();
 	void setMove(float speed, float angle);
-	float getSheelSpeed();
+	float getShellSpeed();
 	void setName(System::String ^);
 	PointF ^ getLocation();
 	void setHP(int);
@@ -37,6 +37,6 @@ protected:
 	int defenseCD;	//防禦冷卻
 	int defenseCDNow;	//防禦冷卻計數
 	int damage;	//發射的砲彈傷害
-	float sheelSpeed;	//發射的砲彈速度
+	float shellSpeed;	//發射的砲彈速度
 };
 

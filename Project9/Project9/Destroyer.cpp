@@ -12,5 +12,5 @@ Destroyer::Destroyer(System::String ^ name, System::Drawing::PointF ^ location):
 	this->maxDefenseRange = 20;
 	this->defenseCD = 60;
 	this->damage = 1;
-	this->sheelSpeed = (float)3.0/60;
+	this->shellSpeed = (float)3.0/60;
 }

@@ -139,6 +139,7 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="CarrierVessel.cpp" />
     <ClCompile Include="Destroyer.cpp" />
+    <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Fleet.cpp" />
     <ClCompile Include="FlyingMissileCruiser.cpp" />
     <ClCompile Include="MyForm.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Board.h" />
     <ClInclude Include="CarrierVessel.h" />
     <ClInclude Include="Destroyer.h" />
+    <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Fleet.h" />
     <ClInclude Include="FlyingMissileCruiser.h" />
     <ClInclude Include="MyForm.h">

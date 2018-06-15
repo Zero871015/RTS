@@ -10,5 +10,5 @@ FlyingMissileCruiser::FlyingMissileCruiser(System::String ^ name, System::Drawin
 	this->maxDefenseRange = 10;
 	this->defenseCD = 30;
 	this->damage = 3;
-	this->sheelSpeed = (float)2.0/60;
+	this->shellSpeed = (float)2.0/60;
 }

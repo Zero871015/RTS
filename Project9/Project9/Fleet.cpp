@@ -7,7 +7,7 @@ Fleet::Fleet()
 	this->name = "GG";
 	this->location = gcnew PointF(2, 2);
 	this->maxSpeed = (float)0.1;
-	this->sheelSpeed = (float)0.1;
+	this->shellSpeed = (float)0.1;
 	this->attackCDNow = 0;
 	this->defenseCDNow = 0;
 }
@@ -17,7 +17,7 @@ Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
 	this->name = name;
 	this->location = gcnew PointF(location->X,location->Y);
 	this->maxSpeed = (float)0.1;
-	this->sheelSpeed = (float)0.1;
+	this->shellSpeed = (float)0.1;
 	this->attackCDNow = 0;
 	this->defenseCDNow = 0;
 }
@@ -79,7 +79,7 @@ bool Fleet::Fire(System::Collections::Generic::List<Shell^>^ list, System::Strin
 			System::Diagnostics::Debug::WriteLine("¤£¦b§ðÀ»½d³ò¤º");
 			return false;
 		}
-		Shell ^temp = gcnew Shell(name, sheelSpeed,this->damage, this->location, location);
+		Shell ^temp = gcnew Shell(name, shellSpeed,this->damage, this->location, location);
 		list->Add(temp);
 		this->attackCDNow = this->attackCD;
 		return true;
@@ -109,9 +109,9 @@ void Fleet::setMove(float speed, float angle)
 	this->angle = angle;
 }
 
-float Fleet::getSheelSpeed()
+float Fleet::getShellSpeed()
 {
-	return this->sheelSpeed;
+	return this->shellSpeed;
 }
 
 void Fleet::setName(System::String ^ name)

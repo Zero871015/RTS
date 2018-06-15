@@ -42,6 +42,9 @@
     <ClCompile Include="FlyingMissileCruiser.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="Exceptions.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyForm.h">
@@ -69,6 +72,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="FlyingMissileCruiser.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Exceptions.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

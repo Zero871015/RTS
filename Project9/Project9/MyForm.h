@@ -7,7 +7,8 @@
 #include "CarrierVessel.h"
 #include "Destroyer.h"
 #include "FlyingMissileCruiser.h"
-
+#include "Exceptions.h"
+#include <cctype>
 //遊戲視窗大小
 #define W 1080
 #define H 720
@@ -46,6 +47,8 @@ namespace Project9 {
 	private: System::Windows::Forms::TextBox^  textBox2;
 	private: System::Windows::Forms::Label^  lblTime;
 	private: System::Windows::Forms::TextBox^  Log;
+	private: System::Windows::Forms::Button^  BtnNextSec;
+	private: System::Windows::Forms::Button^  BtnClearLog;
 
 	private: System::Windows::Forms::Button^  BtnPause;
 	public:
@@ -86,6 +89,8 @@ namespace Project9 {
 			this->BtnPause = (gcnew System::Windows::Forms::Button());
 			this->lblTime = (gcnew System::Windows::Forms::Label());
 			this->Log = (gcnew System::Windows::Forms::TextBox());
+			this->BtnNextSec = (gcnew System::Windows::Forms::Button());
+			this->BtnClearLog = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -159,7 +164,7 @@ namespace Project9 {
 			this->lblTime->BackColor = System::Drawing::SystemColors::ActiveCaption;
 			this->lblTime->Font = (gcnew System::Drawing::Font(L"Ink Free", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->lblTime->Location = System::Drawing::Point(1083, 36);
+			this->lblTime->Location = System::Drawing::Point(1060, 36);
 			this->lblTime->Name = L"lblTime";
 			this->lblTime->Size = System::Drawing::Size(222, 73);
 			this->lblTime->TabIndex = 3;
@@ -170,19 +175,45 @@ namespace Project9 {
 			// 
 			this->Log->Font = (gcnew System::Drawing::Font(L"新細明體", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->Log->Location = System::Drawing::Point(959, 130);
+			this->Log->Location = System::Drawing::Point(961, 130);
 			this->Log->Multiline = true;
 			this->Log->Name = L"Log";
 			this->Log->ReadOnly = true;
-			this->Log->Size = System::Drawing::Size(435, 700);
+			this->Log->Size = System::Drawing::Size(421, 700);
 			this->Log->TabIndex = 2;
 			this->Log->Tag = L"";
+			// 
+			// BtnNextSec
+			// 
+			this->BtnNextSec->Font = (gcnew System::Drawing::Font(L"Impact", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->BtnNextSec->Location = System::Drawing::Point(30, 707);
+			this->BtnNextSec->Name = L"BtnNextSec";
+			this->BtnNextSec->Size = System::Drawing::Size(285, 36);
+			this->BtnNextSec->TabIndex = 4;
+			this->BtnNextSec->Text = L"NextSec";
+			this->BtnNextSec->UseVisualStyleBackColor = true;
+			this->BtnNextSec->Click += gcnew System::EventHandler(this, &MyForm::timer1_Tick);
+			// 
+			// BtnClearLog
+			// 
+			this->BtnClearLog->Font = (gcnew System::Drawing::Font(L"Impact", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->BtnClearLog->Location = System::Drawing::Point(340, 707);
+			this->BtnClearLog->Name = L"BtnClearLog";
+			this->BtnClearLog->Size = System::Drawing::Size(285, 36);
+			this->BtnClearLog->TabIndex = 5;
+			this->BtnClearLog->Text = L"ClearLog";
+			this->BtnClearLog->UseVisualStyleBackColor = true;
+			this->BtnClearLog->Click += gcnew System::EventHandler(this, &MyForm::BtnClearLog_Click);
 			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1300, 1041);
+			this->ClientSize = System::Drawing::Size(1486, 1041);
+			this->Controls->Add(this->BtnClearLog);
+			this->Controls->Add(this->BtnNextSec);
 			this->Controls->Add(this->Log);
 			this->Controls->Add(this->lblTime);
 			this->Controls->Add(this->BtnPause);
@@ -211,11 +242,19 @@ namespace Project9 {
 			UpdateCanvas();		//更新畫布
 			this->Refresh();	//call My_Form Paint
 		}
-
-		void ReadCommand(System::Windows::Forms::TextBox ^ textBox,Team ^ team)
+		bool allIsDigit(System::String ^ number)
+		{
+			for (int i = 0; i < number->Length; i++)
+			{
+				if (isdigit(number[i]) == false)
+					return false;
+			}
+			return true;
+		}
+		void ReadCommand(System::Windows::Forms::TextBox ^ textBox, Team ^ team)
 		{
 			System::Collections::Generic::List<System::String ^> lines;
-			System::String ^ temp="";
+			System::String ^ temp = "";
 
 			for (auto i = 0; i < textBox->Text->Length; i++)
 			{
@@ -239,185 +278,224 @@ namespace Project9 {
 
 			for each (System::String ^ var in lines)
 			{
-				array<System::String ^>^ words;
-				words = var->Split(gcnew array<System::String ^>{" ",","},System::StringSplitOptions::RemoveEmptyEntries);
-				if (words->Length == 0)
+				try
 				{
-					System::Diagnostics::Debug::WriteLine("空的一行");
-					break;
-				}
-				if (words[0] == "SET")
-				{
-					if (words->Length == 5)
+					array<System::String ^>^ words;
+					words = var->Split(gcnew array<System::String ^>{" ", ","}, System::StringSplitOptions::RemoveEmptyEntries);
+					if (words->Length == 0)
+						throw gcnew Exceptions(words, error::blankLine);
+					if (words[0] == "SET")
 					{
-						words[3]=words[3]->Remove(0,1);
-						words[4]=words[4]->Remove(words[4]->Length - 1,1);
-						if (words[2] == "CV")
+						if (words->Length == 5)
 						{
-							team->fleetList->Add(words[1], gcnew CarrierVessel(words[1],
-								gcnew PointF(float::Parse(words[3]) + 1,
-									float::Parse(words[4]) + 1)));
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag+
-								" SET "+words[1]+" with CV at ("+words[3]+","+words[4]+") -> Success\r\n";
-						}
-						else if (words[2] == "BB")
-						{
-							team->fleetList->Add(words[1], gcnew BB(words[1],
-								gcnew PointF(float::Parse(words[3]) + 1,
-									float::Parse(words[4]) + 1)));
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-								" SET " + words[1] + " with BB at (" + words[3] + "," + words[4] + ") -> Success\r\n";
-						}
-						else if (words[2] == "CG")
-						{
-							team->fleetList->Add(words[1], gcnew FlyingMissileCruiser(words[1],
-								gcnew PointF(float::Parse(words[3]) + 1,
-									float::Parse(words[4]) + 1)));
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-								" SET " + words[1] + " with CG at (" + words[3] + "," + words[4] + ") -> Success\r\n";
-						}
-						else if (words[2] == "DD")
-						{
-							team->fleetList->Add(words[1], gcnew Destroyer(words[1],
-								gcnew PointF(float::Parse(words[3]) + 1,
-									float::Parse(words[4]) + 1)));
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-								" SET " + words[1] + " with DD at (" + words[3] + "," + words[4] + ") -> Success\r\n";
-						}
-						else
-						{
-							System::Diagnostics::Debug::WriteLine("沒有這種船艦");
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-								" SET " + words[1] + " with CV at (" + words[3] + "," + words[4] + ") -> Fail\r\n";
-							break;
-						}
-					}
-					else
-					{
-						System::Diagnostics::Debug::WriteLine("指令錯誤");
-						break;
-					}
-				}
-				else if (words[0] == "FIRE")
-				{
-					if (words->Length == 4)
-					{
-						//有這船艦
-						if (team->fleetList->ContainsKey(words[1]))
-						{
-							words[2]=words[2]->Remove(0,1);
-							words[3]=words[3]->Remove(words[3]->Length - 1,1);
-							
-							if (team->fleetList[words[1]]->Fire(team->shellList,
-								"Sheel" + textBox->Tag + team->count,
-								gcnew PointF(float::Parse(words[2]) + 1, float::Parse(words[3]) + 1)))
+							words[3] = words[3]->Remove(0, 1);
+							words[4] = words[4]->Remove(words[4]->Length - 1, 1);
+							if (allIsDigit(words[3]) == false || allIsDigit(words[4]) == false) // 不是數字
+								throw gcnew Exceptions(words, error::errorCommand);
+							if (team->fleetList->ContainsKey(words[1]) == true) // 相同船艦名字
+								throw gcnew Exceptions(words, error::errorSET);
+							if (words[2] == "CV")
 							{
+								team->fleetList->Add(words[1], gcnew CarrierVessel(words[1],
+									gcnew PointF(float::Parse(words[3]) + 1,
+										float::Parse(words[4]) + 1)));
 								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-									" "+words[1] + " Fire to (" + words[2] + "," + words[3] + ") -> "+ "Sheel" + textBox->Tag + team->count +"\r\n";
-								team->count++;
+									" SET " + words[1] + " with CV at (" + words[3] + "," + words[4] + ") -> Success\r\n";
+							}
+							else if (words[2] == "BB")
+							{
+								team->fleetList->Add(words[1], gcnew BB(words[1],
+									gcnew PointF(float::Parse(words[3]) + 1,
+										float::Parse(words[4]) + 1)));
+								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+									" SET " + words[1] + " with BB at (" + words[3] + "," + words[4] + ") -> Success\r\n";
+							}
+							else if (words[2] == "CG")
+							{
+								team->fleetList->Add(words[1], gcnew FlyingMissileCruiser(words[1],
+									gcnew PointF(float::Parse(words[3]) + 1,
+										float::Parse(words[4]) + 1)));
+								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+									" SET " + words[1] + " with CG at (" + words[3] + "," + words[4] + ") -> Success\r\n";
+							}
+							else if (words[2] == "DD")
+							{
+								team->fleetList->Add(words[1], gcnew Destroyer(words[1],
+									gcnew PointF(float::Parse(words[3]) + 1,
+										float::Parse(words[4]) + 1)));
+								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+									" SET " + words[1] + " with DD at (" + words[3] + "," + words[4] + ") -> Success\r\n";
 							}
 							else
 							{
-								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-									" " + words[1] + " Fire to (" + words[2] + "," + words[3] + ") -> Fail\r\n";
+								throw gcnew Exceptions(words, error::errorCommand);
 							}
 						}
 						else
 						{
-							System::Diagnostics::Debug::WriteLine("找不到此船艦");
+							throw gcnew Exceptions(words, error::errorCommand);
 						}
 					}
-					else
+					else if (words[0] == "FIRE")
 					{
-						System::Diagnostics::Debug::WriteLine("指令錯誤");
-						break;
-					}
-				}
-				else if (words[0] == "DEFENSE")
-				{
-					if (words->Length == 3)
-					{
-						if (team->fleetList->ContainsKey(words[1]))
+						if (words->Length == 4)
 						{
-							bool isFound = false;
-							isFound = team->fleetList[words[1]]->Defense(words[2], team1.shellList);
-							if(!isFound)
-								isFound = team->fleetList[words[1]]->Defense(words[2], team2.shellList);
-							team->fleetList[words[1]]->SetDefenseCD();
-							if (isFound)
+							//有這船艦
+							if (team->fleetList->ContainsKey(words[1]))
 							{
-								Log->Text += "[" + lblTime->Text + "] " + words[1] +
-									" Defense " + words[2] + " -> Hit\r\n";
+								words[2] = words[2]->Remove(0, 1);
+								words[3] = words[3]->Remove(words[3]->Length - 1, 1);
+								if (allIsDigit(words[2]) == false || allIsDigit(words[3]) == false) // 不是數字
+									throw gcnew Exceptions(words, error::errorCommand);
+								if (team->fleetList[words[1]]->Fire(team->shellList,
+									"Shell" + textBox->Tag + team->count,
+									gcnew PointF(float::Parse(words[2]) + 1, float::Parse(words[3]) + 1)))
+								{
+									Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+										" " + words[1] + " Fire to (" + words[2] + "," + words[3] + ") -> " + "Shell" + textBox->Tag + team->count + "\r\n";
+									team->count++;
+								}
+								else
+								{
+									throw gcnew Exceptions(words, error::errorFIRE);
+								}
 							}
 							else
 							{
-								Log->Text += "[" + lblTime->Text + "] " + words[1] +
-									" Defense " + words[2] + " -> Fail\r\n";
+								System::Diagnostics::Debug::WriteLine("找不到此船艦");
 							}
 						}
 						else
 						{
-							Log->Text += "[" + lblTime->Text + "] " + words[1] +
-								" Defense " + words[2] + " -> Fail\r\n";
-							System::Diagnostics::Debug::WriteLine("找不到此船艦");
+							throw gcnew Exceptions(words, error::errorCommand);
 						}
+
 					}
-					else
+					else if (words[0] == "DEFENSE")
 					{
-						System::Diagnostics::Debug::WriteLine("指令錯誤");
-						break;
-					}
-				}
-				else if (words[0] == "TAG")
-				{
-					if (words->Length == 3)
-					{
-						if (team->fleetList->ContainsKey(words[1]) && !team->fleetList->ContainsKey(words[2]))
+						if (words->Length == 3)
 						{
-							Fleet ^ temp = gcnew Fleet();
-							temp = team->fleetList[words[1]];
-							temp->setName(words[2]);
-							team->fleetList->Add(words[2],temp);
-							team->fleetList->Remove(words[1]);
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-								" Rename " + words[1] + " to " + words[2] + " -> Success\r\n";
+							if (team->fleetList->ContainsKey(words[1]))
+							{
+								bool isFound = false;
+								isFound = team->fleetList[words[1]]->Defense(words[2], team1.shellList);
+								if (!isFound)
+									isFound = team->fleetList[words[1]]->Defense(words[2], team2.shellList);
+								team->fleetList[words[1]]->SetDefenseCD();
+								if (isFound)
+								{
+									Log->Text += "[" + lblTime->Text + "] " + words[1] +
+										" Defense " + words[2] + " -> Hit\r\n";
+								}
+								else
+								{
+									throw gcnew Exceptions(words, error::errorDEFENSE);
+								}
+							}
+							else
+							{
+								throw gcnew Exceptions(words, error::errorDEFENSE);
+							}
 						}
 						else
 						{
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-								" Rename " + words[1] + " to " + words[2] + " -> Fail\r\n";
-							System::Diagnostics::Debug::WriteLine("取名失敗");
-							break;
+							throw gcnew Exceptions(words, error::errorCommand);
 						}
 					}
-					else
+					else if (words[0] == "TAG")
 					{
-						System::Diagnostics::Debug::WriteLine("指令錯誤");
-						break;
-					}
-				}
-				else if (words[0] == "MOVE")
-				{
-					if (words->Length == 4)
-					{
-						if (team->fleetList->ContainsKey(words[1]))
+						if (words->Length == 3)
 						{
-							team->fleetList[words[1]]->setMove(float::Parse(words[2]), float::Parse(words[3]));
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-								words[1] + " Move to " + words[2] + " as " + words[3] + " -> Success\r\n";
+							if (team->fleetList->ContainsKey(words[1]) && !team->fleetList->ContainsKey(words[2]))
+							{
+								Fleet ^ temp = gcnew Fleet();
+								temp = team->fleetList[words[1]];
+								temp->setName(words[2]);
+								team->fleetList->Add(words[2], temp);
+								team->fleetList->Remove(words[1]);
+								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+									" Rename " + words[1] + " to " + words[2] + " -> Success\r\n";
+							}
+							else
+							{
+								throw gcnew Exceptions(words, error::errorTAG);
+							}
 						}
 						else
 						{
-							Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-								words[1] + " Move to " + words[2] + " as " + words[3] + " -> Fail\r\n";
-							System::Diagnostics::Debug::WriteLine("找不到此船艦");
+							throw gcnew Exceptions(words, error::errorCommand);
 						}
 					}
-					else
+					else if (words[0] == "MOVE")
 					{
-						System::Diagnostics::Debug::WriteLine("指令錯誤");
+						if (words->Length == 4)
+						{
+							if (team->fleetList->ContainsKey(words[1]))
+							{
+								team->fleetList[words[1]]->setMove(float::Parse(words[2]), float::Parse(words[3]));
+								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+									words[1] + " Move to " + words[3] + " as " + words[2] + " -> Success\r\n";
+							}
+							else
+							{
+								throw gcnew Exceptions(words, error::errorMOVE);
+							}
+						}
+						else
+						{
+							throw gcnew Exceptions(words, error::errorCommand);
+						}
+					}
+				}
+				catch (Exceptions ^e)
+				{
+					switch (e->getType())
+					{
+					case error::blankLine:
+					{
+						//有空行
+					}
+					case error::errorCommand:
+					{
+						//指令錯誤
+					}
+					case error::errorSET:
+					{
+						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+							" SET " + e->text[1] + " with " + e->text[2] + " at (" + e->text[3] + "," + e->text[4] + ") -> Fail\r\n";
 						break;
 					}
+					case error::errorFIRE:
+					{
+						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+							" " + e->text[1] + " Fire to (" + e->text[2] + "," + e->text[3] + ") -> Fail\r\n";
+						break;
+					}
+					case error::errorDEFENSE:
+					{
+						Log->Text += "[" + lblTime->Text + "] " + e->text[1] +
+							" Defense " + e->text[2] + " -> Fail\r\n";
+						break;
+					}
+					case error::errorTAG:
+					{
+						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+							" Rename " + e->text[1] + " to " + e->text[2] + " -> Fail\r\n";
+						break;
+					}
+					case error::errorMOVE:
+					{
+						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+							e->text[1] + " Move to " + e->text[2] + " as " + e->text[3] + " -> Fail\r\n";
+						break;
+					}
+					default:
+						break;
+					}
+				}
+				catch (...)
+				{
+
 				}
 			}
 
@@ -463,13 +541,13 @@ namespace Project9 {
 		{
 			var.Value->Move();
 		}
-		
+
 		//迭代器讓所有砲彈移動
 		for each (Shell^ var in team1.shellList)
 		{
 			var->Move();
 		}
-		for each (Shell^ var in team2.shellList)	
+		for each (Shell^ var in team2.shellList)
 		{
 			var->Move();
 		}
@@ -481,12 +559,14 @@ namespace Project9 {
 		{
 			if (var->getIsBoom())
 			{
+				System::Collections::Generic::List<System::String ^>^ fleetsName = gcnew System::Collections::Generic::List<System::String ^>;
 				for each (auto fleet in team1.fleetList)
 				{
-					float dis = sqrt(powf(var->getLocation()->X-fleet.Value->getLocation()->X,2)+
+					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
 						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
 					if (dis < 1.5)
 					{
+						fleetsName->Add(gcnew System::String("TeamA " + fleet.Key));
 						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
 						System::Diagnostics::Debug::WriteLine("擊中船艦");
 					}
@@ -497,9 +577,28 @@ namespace Project9 {
 						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
 					if (dis < 1.5)
 					{
+						fleetsName->Add(gcnew System::String("TeamB " + fleet.Key));
 						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
 						System::Diagnostics::Debug::WriteLine("擊中船艦");
 					}
+				}
+				//砲彈命中與否Log
+				if (fleetsName->Count != 0)
+				{
+					Log->Text += "[" + lblTime->Text + "] " + var->getName() +
+						" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> hit {";
+					for (int i = 0; i < fleetsName->Count; i++)
+					{
+						if (i != fleetsName->Count - 1)
+							Log->Text += fleetsName[i] + ", ";
+						else
+							Log->Text += fleetsName[i] + "}\r\n";
+					}
+				}
+				else
+				{
+					Log->Text += "[" + lblTime->Text + "] " + var->getName() +
+						" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> miss\r\n";
 				}
 				team1.bufferShellList->Remove(var);
 			}
@@ -508,12 +607,14 @@ namespace Project9 {
 		{
 			if (var->getIsBoom())
 			{
+				System::Collections::Generic::List<System::String ^>^ fleetsName = gcnew System::Collections::Generic::List<System::String ^>;
 				for each (auto fleet in team1.fleetList)
 				{
 					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
 						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
 					if (dis < 1.5)
 					{
+						fleetsName->Add(gcnew System::String("TeamA " + fleet.Key));
 						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
 						System::Diagnostics::Debug::WriteLine("擊中船艦");
 					}
@@ -524,16 +625,35 @@ namespace Project9 {
 						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
 					if (dis < 1.5)
 					{
+						fleetsName->Add(gcnew System::String("TeamB " + fleet.Key));
 						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
 						System::Diagnostics::Debug::WriteLine("擊中船艦");
 					}
+				}
+				//砲彈命中與否Log
+				if (fleetsName->Count != 0)
+				{
+					Log->Text += "[" + lblTime->Text + "] " + var->getName() +
+						" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> hit {";
+					for (int i = 0; i < fleetsName->Count; i++)
+					{
+						if (i != fleetsName->Count - 1)
+							Log->Text += fleetsName[i] + ", ";
+						else
+							Log->Text += fleetsName[i] + "}\r\n";
+					}
+				}
+				else
+				{
+					Log->Text += "[" + lblTime->Text + "] " + var->getName() +
+						" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> miss\r\n";
 				}
 				team2.bufferShellList->Remove(var);
 			}
 		}
 		team1.shellList = team1.bufferShellList;
 		team2.shellList = team2.bufferShellList;
-		
+
 		System::Collections::Generic::Dictionary<System::String ^, Fleet ^>^ temp;
 		//檢查是否有船艦被擊沉
 		temp = gcnew System::Collections::Generic::Dictionary<System::String ^, Fleet ^>(team1.fleetList);
@@ -543,6 +663,8 @@ namespace Project9 {
 			{
 				team1.fleetList->Remove(var.Key);
 				System::Diagnostics::Debug::WriteLine("船艦被擊沉");
+				Log->Text += "[" + lblTime->Text + "]" + " TeamA " +
+					var.Key + " destoryed\r\n";
 			}
 		}
 		temp = gcnew System::Collections::Generic::Dictionary<System::String ^, Fleet ^>(team2.fleetList);
@@ -552,6 +674,8 @@ namespace Project9 {
 			{
 				team2.fleetList->Remove(var.Key);
 				System::Diagnostics::Debug::WriteLine("船艦被擊沉");
+				Log->Text += "[" + lblTime->Text + "]" + " TeamB " +
+					var.Key + " destoryed\r\n";
 			}
 		}
 
@@ -564,8 +688,8 @@ namespace Project9 {
 		g->Clear(System::Drawing::Color::White);	//先清空畫布
 
 		myBoard.Draw(g);	//重畫地圖
-		
-		//畫船
+
+							//畫船
 		for each (auto var in team1.fleetList)
 		{
 			var.Value->Draw(g);
@@ -586,23 +710,28 @@ namespace Project9 {
 		}
 	}
 	private: System::Void BtnStart_Click(System::Object^  sender, System::EventArgs^  e) {
-		ReadCommand(textBox1,%team1);
-		ReadCommand(textBox2,%team2);
+		ReadCommand(textBox1, %team1);
+		ReadCommand(textBox2, %team2);
 		timer1->Enabled = true;
 		BtnPause->Enabled = true;
 		BtnStart->Enabled = false;
+		BtnNextSec->Enabled = false;
 		textBox1->ReadOnly = true;
 		textBox2->ReadOnly = true;
 	}
 	private: System::Void BtnPause_Click(System::Object^  sender, System::EventArgs^  e) {
 		textBox1->Text = "";
 		textBox2->Text = "";
-		
+
 		timer1->Enabled = false;
 		BtnStart->Enabled = true;
 		BtnPause->Enabled = false;
+		BtnNextSec->Enabled = true;
 		textBox1->ReadOnly = false;
 		textBox2->ReadOnly = false;
+	}
+	private: System::Void BtnClearLog_Click(System::Object^  sender, System::EventArgs^  e) {
+		Log->Text = "";
 	}
 };
 }
