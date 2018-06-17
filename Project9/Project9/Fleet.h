@@ -18,6 +18,9 @@ public:
 	PointF ^ getLocation();
 	void setHP(int);
 	int getHP();
+	System::String ^ getName();
+	System::String ^ showAttackCD();
+	System::String ^ showDefenseCD();
 	void UpdataCD();
 	bool Defense(System::String ^ shellName, System::Collections::Generic::List<Shell^>^ list);
 	void SetDefenseCD();

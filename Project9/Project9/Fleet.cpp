@@ -131,6 +131,27 @@ int Fleet::getHP()
 	return this->HP;
 }
 
+System::String ^ Fleet::getName()
+{
+	return this->name;
+}
+
+System::String ^ Fleet::showAttackCD()
+{
+	System::String ^ str;
+	str = (this->attackCDNow >= 0) ? (this->attackCD - this->attackCDNow).ToString() : this->attackCD.ToString();
+	str += " / " + this->attackCD.ToString();
+	return str;
+}
+
+System::String ^ Fleet::showDefenseCD()
+{
+	System::String ^ str;
+	str = (this->defenseCDNow >= 0) ? (this->defenseCD - this->defenseCDNow).ToString() : this->defenseCD.ToString();
+	str += " / " + this->defenseCD.ToString();
+	return str;
+}
+
 void Fleet::UpdataCD()
 {
 	this->attackCDNow--;

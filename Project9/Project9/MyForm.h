@@ -56,6 +56,15 @@ namespace Project9 {
 
 
 	private: System::Windows::Forms::ColorDialog^  colorDialogFleetB;
+	private: System::Windows::Forms::PictureBox^  pictureBox1;
+	private: System::Windows::Forms::GroupBox^  FleetDetailBox;
+	private: System::Windows::Forms::Label^  lblDCD;
+	private: System::Windows::Forms::Label^  lblACD;
+	private: System::Windows::Forms::Label^  lblSCD;
+	private: System::Windows::Forms::Label^  lblHP;
+	private: System::Windows::Forms::Label^  lblLocation;
+
+	private: System::Windows::Forms::Label^  lblName;
 
 	private: System::Windows::Forms::Button^  BtnPause;
 	public:
@@ -102,7 +111,17 @@ namespace Project9 {
 			this->BtnColorA = (gcnew System::Windows::Forms::Button());
 			this->BtnColorB = (gcnew System::Windows::Forms::Button());
 			this->colorDialogFleetB = (gcnew System::Windows::Forms::ColorDialog());
+			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+			this->FleetDetailBox = (gcnew System::Windows::Forms::GroupBox());
+			this->lblDCD = (gcnew System::Windows::Forms::Label());
+			this->lblACD = (gcnew System::Windows::Forms::Label());
+			this->lblSCD = (gcnew System::Windows::Forms::Label());
+			this->lblHP = (gcnew System::Windows::Forms::Label());
+			this->lblLocation = (gcnew System::Windows::Forms::Label());
+			this->lblName = (gcnew System::Windows::Forms::Label());
 			this->groupBox1->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+			this->FleetDetailBox->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// timer1
@@ -238,11 +257,91 @@ namespace Project9 {
 			this->BtnColorB->UseVisualStyleBackColor = true;
 			this->BtnColorB->Click += gcnew System::EventHandler(this, &MyForm::BtnColorFleetB_Click);
 			// 
+			// pictureBox1
+			// 
+			this->pictureBox1->Location = System::Drawing::Point(30, 130);
+			this->pictureBox1->Name = L"pictureBox1";
+			this->pictureBox1->Size = System::Drawing::Size(595, 571);
+			this->pictureBox1->TabIndex = 7;
+			this->pictureBox1->TabStop = false;
+			this->pictureBox1->MouseMove += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::pictureBox1_MouseMove);
+			// 
+			// FleetDetailBox
+			// 
+			this->FleetDetailBox->Controls->Add(this->lblDCD);
+			this->FleetDetailBox->Controls->Add(this->lblACD);
+			this->FleetDetailBox->Controls->Add(this->lblSCD);
+			this->FleetDetailBox->Controls->Add(this->lblHP);
+			this->FleetDetailBox->Controls->Add(this->lblLocation);
+			this->FleetDetailBox->Controls->Add(this->lblName);
+			this->FleetDetailBox->Location = System::Drawing::Point(162, 23);
+			this->FleetDetailBox->Name = L"FleetDetailBox";
+			this->FleetDetailBox->Size = System::Drawing::Size(463, 101);
+			this->FleetDetailBox->TabIndex = 8;
+			this->FleetDetailBox->TabStop = false;
+			this->FleetDetailBox->Text = L"Fleet Detail";
+			// 
+			// lblDCD
+			// 
+			this->lblDCD->AutoSize = true;
+			this->lblDCD->Location = System::Drawing::Point(330, 71);
+			this->lblDCD->Name = L"lblDCD";
+			this->lblDCD->Size = System::Drawing::Size(62, 15);
+			this->lblDCD->TabIndex = 4;
+			this->lblDCD->Text = L"DCD: \?\?\?";
+			// 
+			// lblACD
+			// 
+			this->lblACD->AutoSize = true;
+			this->lblACD->Location = System::Drawing::Point(330, 25);
+			this->lblACD->Name = L"lblACD";
+			this->lblACD->Size = System::Drawing::Size(62, 15);
+			this->lblACD->TabIndex = 4;
+			this->lblACD->Text = L"ACD: \?\?\?";
+			// 
+			// lblSCD
+			// 
+			this->lblSCD->AutoSize = true;
+			this->lblSCD->Location = System::Drawing::Point(171, 71);
+			this->lblSCD->Name = L"lblSCD";
+			this->lblSCD->Size = System::Drawing::Size(60, 15);
+			this->lblSCD->TabIndex = 3;
+			this->lblSCD->Text = L"SCD: \?\?\?";
+			// 
+			// lblHP
+			// 
+			this->lblHP->AutoSize = true;
+			this->lblHP->Location = System::Drawing::Point(171, 25);
+			this->lblHP->Name = L"lblHP";
+			this->lblHP->Size = System::Drawing::Size(51, 15);
+			this->lblHP->TabIndex = 2;
+			this->lblHP->Text = L"HP: \?\?\?";
+			// 
+			// lblLocation
+			// 
+			this->lblLocation->AutoSize = true;
+			this->lblLocation->Location = System::Drawing::Point(7, 71);
+			this->lblLocation->Name = L"lblLocation";
+			this->lblLocation->Size = System::Drawing::Size(83, 15);
+			this->lblLocation->TabIndex = 1;
+			this->lblLocation->Text = L"Location: \?\?\?";
+			// 
+			// lblName
+			// 
+			this->lblName->AutoSize = true;
+			this->lblName->Location = System::Drawing::Point(7, 25);
+			this->lblName->Name = L"lblName";
+			this->lblName->Size = System::Drawing::Size(66, 15);
+			this->lblName->TabIndex = 0;
+			this->lblName->Text = L"Name: \?\?\?";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1486, 1041);
+			this->Controls->Add(this->FleetDetailBox);
+			this->Controls->Add(this->pictureBox1);
 			this->Controls->Add(this->BtnColorB);
 			this->Controls->Add(this->BtnColorA);
 			this->Controls->Add(this->BtnClearLog);
@@ -258,6 +357,9 @@ namespace Project9 {
 			this->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::MyForm_Paint);
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+			this->FleetDetailBox->ResumeLayout(false);
+			this->FleetDetailBox->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -273,7 +375,7 @@ namespace Project9 {
 			this->ClientSize = System::Drawing::Size(W, H);	//調整遊戲視窗大小
 
 			UpdateCanvas();		//更新畫布
-			this->Refresh();	//call My_Form Paint
+			pictureBox1->Image = bitmap;
 		}
 		bool allIsDigit(System::String ^ number)
 		{
@@ -321,8 +423,10 @@ namespace Project9 {
 					{
 						if (words->Length == 5)
 						{
-							words[3] = words[3]->Remove(0, 1);
-							words[4] = words[4]->Remove(words[4]->Length - 1, 1);
+							if(words[3][0]=='(')
+								words[3] = words[3]->Remove(0, 1);
+							if (words[4][words[4]->Length - 1] == ')')
+								words[4] = words[4]->Remove(words[4]->Length - 1, 1);
 							if (allIsDigit(words[3]) == false || allIsDigit(words[4]) == false) // 不是數字
 								throw gcnew Exceptions(words, error::errorCommand);
 							if (team->fleetList->ContainsKey(words[1]) == true) // 相同船艦名字
@@ -376,8 +480,10 @@ namespace Project9 {
 							//有這船艦
 							if (team->fleetList->ContainsKey(words[1]))
 							{
-								words[2] = words[2]->Remove(0, 1);
-								words[3] = words[3]->Remove(words[3]->Length - 1, 1);
+								if (words[2][0] == '(')
+									words[2] = words[2]->Remove(0, 1);
+								if (words[3][words[3]->Length - 1] == ')')
+									words[3] = words[3]->Remove(words[3]->Length - 1, 1);
 								if (allIsDigit(words[2]) == false || allIsDigit(words[3]) == false) // 不是數字
 									throw gcnew Exceptions(words, error::errorCommand);
 								if (team->fleetList[words[1]]->Fire(team->shellList,
@@ -487,10 +593,12 @@ namespace Project9 {
 					case error::blankLine:
 					{
 						//有空行
+						break;
 					}
 					case error::errorCommand:
 					{
 						//指令錯誤
+						break;
 					}
 					case error::errorSET:
 					{
@@ -536,7 +644,7 @@ namespace Project9 {
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e) {
 	}
 	private: System::Void MyForm_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
-		e->Graphics->DrawImage(bitmap, 20, 100);	//實際畫在視窗上
+		
 	}
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
@@ -713,7 +821,7 @@ namespace Project9 {
 		}
 
 		UpdateCanvas();		//更新畫布
-		this->Refresh();	//call My_Form Paint
+		//this->Refresh();	//call My_Form Paint
 	}
 
 	private: System::Void UpdateCanvas()
@@ -741,6 +849,8 @@ namespace Project9 {
 		{
 			var->Draw(g);
 		}
+
+		pictureBox1->Image = bitmap;
 	}
 	private: System::Void BtnStart_Click(System::Object^  sender, System::EventArgs^  e) {
 		ReadCommand(textBox1, %team1);
@@ -770,12 +880,62 @@ namespace Project9 {
 		if (colorDialogFleetA->ShowDialog() == ::System::Windows::Forms::DialogResult::OK)
 		{
 			System::Diagnostics::Debug::WriteLine("改變顏色");
+			UpdateCanvas();
 		}
 	}
 	private: System::Void BtnColorFleetB_Click(System::Object^  sender, System::EventArgs^  e) {
 		if (colorDialogFleetB->ShowDialog() == ::System::Windows::Forms::DialogResult::OK)
 		{
 			System::Diagnostics::Debug::WriteLine("改變顏色");
+			UpdateCanvas();
+		}
+	}
+	private: System::Void pictureBox1_MouseMove(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+		float mapX, mapY;
+		mapX = e->Location.X / (float)20.0;
+		mapY = e->Location.Y / (float)20.0;
+		this->Text = mapX + "," + mapY;
+
+		Fleet ^ temp;
+		float minDis = 600;
+		for each (auto var in team1.fleetList)
+		{
+			float X = var.Value->getLocation()->X;
+			float Y = var.Value->getLocation()->Y;
+			float dis = sqrt(pow((X - mapX), 2) + pow((Y - mapY), 2));
+			if (minDis > dis)
+			{
+				minDis = dis;
+				temp = var.Value;
+			}
+		}
+		for each (auto var in team2.fleetList)
+		{
+			float X = var.Value->getLocation()->X;
+			float Y = var.Value->getLocation()->Y;
+			float dis = sqrt(pow((X - mapX), 2) + pow((Y - mapY), 2));
+			if (minDis > dis)
+			{
+				minDis = dis;
+				temp = var.Value;
+			}
+		}
+		if (temp&&minDis < 0.5)
+		{
+			lblName->Text = "Name: " + temp->getName();
+			lblHP->Text = "HP: " + temp->getHP();
+			lblLocation->Text = "X: " + (temp->getLocation()->X - 1) + " , Y: " + (temp->getLocation()->Y - 1);
+			lblACD->Text = "ACD: " + temp->showAttackCD();
+			lblDCD->Text = "DCD: " + temp->showDefenseCD();
+		}
+		else
+		{
+			lblName->Text = "Name: ???";
+			lblHP->Text = "HP: ???";
+			lblACD->Text = "ACD: ???";
+			lblDCD->Text = "DCD: ???";
+			lblLocation->Text = "Location: ???";
+			lblSCD->Text = "SCD: ???";
 		}
 	}
 };
