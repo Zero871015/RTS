@@ -15,7 +15,7 @@ public:
 	Fleet(System::String ^ name, System::Drawing::PointF ^ location);
 	void Draw(Graphics^ g,System::Drawing::Color color);
 	void DrawBig(Graphics^ g);
-	void Move();
+	virtual void Move();
 	bool Fire(System::Collections::Generic::List<Shell^>^ list, System::String ^,PointF ^ location);
 	int whereAmI();
 	bool setMove(float speed, float angle);
@@ -34,7 +34,8 @@ public:
 	bool isDrawBig;
 	int whoAmI();
 
-	virtual bool specialAttack(System::Collections::Generic::List<Shell^>^ list, float angle);//魚雷
+	virtual bool specialAttack(System::Collections::Generic::List<Shell^>^ list, float angle);	//魚雷
+	virtual bool specialAttack();	//防護罩
 protected:
 	System::String ^ name;	//船艦名字
 	int type;	//船艦種類(之後用繼承可能移除)

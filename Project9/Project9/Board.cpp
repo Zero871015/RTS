@@ -42,6 +42,8 @@ void Board::Draw(Graphics^ g)
 				g->FillRectangle(Brushes::Gray, i * boxSize, j * boxSize, boxSize, boxSize);
 			else if(this->map[i][j]==SEA)
 				g->FillRectangle(Brushes::AliceBlue, i * boxSize, j * boxSize, boxSize, boxSize);
+			else if(this->map[i][j]==STORM)
+				g->FillRectangle(Brushes::DarkSlateBlue, i * boxSize, j * boxSize, boxSize, boxSize);
 		}
 	}
 	//µe½u

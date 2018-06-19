@@ -9,6 +9,7 @@
 #include "FlyingMissileCruiser.h"
 #include "Exceptions.h"
 #include <cctype>
+#include <time.h>
 //遊戲視窗大小
 #define W 1080
 #define H 720
@@ -173,14 +174,13 @@ namespace Project9 {
 			// 
 			// BtnPause
 			// 
-			this->BtnPause->Enabled = false;
-			this->BtnPause->Font = (gcnew System::Drawing::Font(L"Impact", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->BtnPause->Font = (gcnew System::Drawing::Font(L"Impact", 24, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->BtnPause->Location = System::Drawing::Point(340, 749);
 			this->BtnPause->Name = L"BtnPause";
 			this->BtnPause->Size = System::Drawing::Size(285, 80);
 			this->BtnPause->TabIndex = 2;
-			this->BtnPause->Text = L"Pause";
+			this->BtnPause->Text = L"Random Map";
 			this->BtnPause->UseVisualStyleBackColor = true;
 			this->BtnPause->Click += gcnew System::EventHandler(this, &MyForm::BtnPause_Click);
 			// 
@@ -610,7 +610,27 @@ namespace Project9 {
 										float::Parse(words[2])))
 									{
 										Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-											" " + words[1] + "SpecialAttack -> Success\r\n";
+											" " + words[1] + "SpecialSkill -> Success\r\n";
+									}
+									else
+									{
+										throw gcnew Exceptions(words, error::errorSP);
+									}
+								}
+								else
+								{
+									throw gcnew Exceptions(words, error::errorCommand);
+								}
+							}
+							//BB防護罩
+							else if (team->fleetList[words[1]]->whoAmI() == 2)
+							{
+								if (words->Length == 2)
+								{
+									if (team->fleetList[words[1]]->specialAttack())
+									{
+										Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+											" " + words[1] + "SpecialSkill -> Success\r\n";
 									}
 									else
 									{
@@ -676,7 +696,7 @@ namespace Project9 {
 					case error::errorSP:
 					{
 						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-							" " + e->text[1] + "SpecialAttack -> Fail\r\n";
+							" " + e->text[1] + "SpecialSkill -> Fail\r\n";
 					}
 					default:
 						break;
@@ -916,17 +936,42 @@ namespace Project9 {
 			BtnNextSec->Enabled = false;
 			textBox1->ReadOnly = true;
 			textBox2->ReadOnly = true;
+			BtnPause->Text = "Pause";
+			this->BtnPause->Font = (gcnew System::Drawing::Font(L"Impact", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 		}
 		private: System::Void BtnPause_Click(System::Object^  sender, System::EventArgs^  e) {
-			textBox1->Text = "";
-			textBox2->Text = "";
+			
+			if (BtnPause->Text == "Pause")
+			{
+				textBox1->Text = "";
+				textBox2->Text = "";
 
-			timer1->Enabled = false;
-			BtnStart->Enabled = true;
-			BtnPause->Enabled = false;
-			BtnNextSec->Enabled = true;
-			textBox1->ReadOnly = false;
-			textBox2->ReadOnly = false;
+				timer1->Enabled = false;
+				BtnStart->Enabled = true;
+				BtnPause->Enabled = false;
+				BtnNextSec->Enabled = true;
+				textBox1->ReadOnly = false;
+				textBox2->ReadOnly = false;
+			}
+			else
+			{
+				unsigned seed;
+				seed = (unsigned)time(NULL); // 取得時間序列
+				srand(seed); // 以時間序列當亂數種子
+				for (int i = 1; i <= 20; i++)
+				{
+					for (int j = 1; j <= 20; j++)
+					{
+						myBoard.map[i][j] = BoardID::SEA;
+						if (rand() % 20 == 1)
+							myBoard.map[i][j] = BoardID::WALL;
+						if (rand() % 80 == 1)
+							myBoard.map[i][j] = BoardID::STORM;
+					}
+				}
+				UpdateCanvas();
+			}
 		}
 		private: System::Void BtnClearLog_Click(System::Object^  sender, System::EventArgs^  e) {
 			Log->Text = "";

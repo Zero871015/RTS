@@ -81,6 +81,10 @@ void Fleet::Move()
 	{
 
 	}
+	else if (whereAmI() == STORM)
+	{
+		this->HP = 0;
+	}
 }
 
 bool Fleet::Fire(System::Collections::Generic::List<Shell^>^ list, System::String ^ name, PointF ^ location)
@@ -117,7 +121,12 @@ int Fleet::whereAmI()
 bool Fleet::setMove(float speed, float angle)
 {
 	//設定速度過快
-	if (speed > this->maxSpeed)
+	speed /= 60;
+	if (abs(speed) > this->maxSpeed)
+	{
+		return false;
+	}
+	if (angle < 0 || angle>359)
 	{
 		return false;
 	}
@@ -223,6 +232,11 @@ int Fleet::whoAmI()
 }
 
 bool Fleet::specialAttack(System::Collections::Generic::List<Shell^>^ list, float angle)
+{
+	return false;
+}
+
+bool Fleet::specialAttack()
 {
 	return false;
 }
