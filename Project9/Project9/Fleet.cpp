@@ -240,3 +240,8 @@ bool Fleet::specialAttack()
 {
 	return false;
 }
+
+bool Fleet::specialAttack(System::Collections::Generic::List<Shell^>^ list, Fleet ^ target)
+{
+	return false;
+}

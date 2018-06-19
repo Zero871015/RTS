@@ -36,6 +36,7 @@ public:
 
 	virtual bool specialAttack(System::Collections::Generic::List<Shell^>^ list, float angle);	//魚雷
 	virtual bool specialAttack();	//防護罩
+	virtual bool specialAttack(System::Collections::Generic::List<Shell^>^ list, Fleet ^ target);	//飛機
 protected:
 	System::String ^ name;	//船艦名字
 	int type;	//船艦種類(之後用繼承可能移除)

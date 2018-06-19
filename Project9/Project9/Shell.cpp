@@ -69,7 +69,7 @@ void Shell::Move()
 	Y = this->targetLocation->Y - this->location->Y;
 	D = sqrt(X * X + Y * Y);
 	//如果已經到點，BOOOOOOOOOOOM
-	if (X * X + Y * Y < this->speed * this->speed)
+	if (X * X + Y * Y < (this->speed * this->speed) + 0.001)	//誤差修正
 	{
 		this->location = this->targetLocation;
 		this->isBoom = true;

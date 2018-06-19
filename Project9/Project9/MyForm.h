@@ -490,7 +490,7 @@ namespace Project9 {
 								if (allIsDigit(words[2]) == false || allIsDigit(words[3]) == false) // 不是數字
 									throw gcnew Exceptions(words, error::errorCommand);
 								if (team->fleetList[words[1]]->Fire(team->shellList,
-									"Shell" + textBox->Tag + team->count,
+									"Shell_" + textBox->Tag + team->count,
 									gcnew PointF(float::Parse(words[2]) + 1, float::Parse(words[3]) + 1)))
 								{
 									Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
@@ -576,7 +576,7 @@ namespace Project9 {
 							{
 								if (team->fleetList[words[1]]->setMove(float::Parse(words[2]), float::Parse(words[3])))
 								{
-								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag + " " +
 									words[1] + " Move to " + words[3] + " as " + words[2] + " -> Success\r\n";
 								}
 								else
@@ -642,6 +642,38 @@ namespace Project9 {
 									throw gcnew Exceptions(words, error::errorCommand);
 								}
 							}
+							//CV飛機
+							else if (team->fleetList[words[1]]->whoAmI() == 1)
+							{
+								if (words->Length == 3)
+								{
+									bool tar = false;
+									if (team1.fleetList->ContainsKey(words[2]))
+									{
+										tar = true;
+										team->fleetList[words[1]]->specialAttack(team->shellList, team1.fleetList[words[2]]);
+									}
+									else if (team2.fleetList->ContainsKey(words[2]))
+									{
+										tar = true;
+										team->fleetList[words[1]]->specialAttack(team->shellList, team2.fleetList[words[2]]);
+									}
+
+									if (tar)
+									{
+										Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+											" " + words[1] + "SpecialSkill -> Success\r\n";
+									}
+									else
+									{
+										throw gcnew Exceptions(words, error::errorSP);
+									}
+								}
+								else
+								{
+									throw gcnew Exceptions(words, error::errorCommand);
+								}
+							}
 						}
 						else
 						{
@@ -689,8 +721,8 @@ namespace Project9 {
 					}
 					case error::errorMOVE:
 					{
-						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-							e->text[1] + " Move to " + e->text[2] + " as " + e->text[3] + " -> Fail\r\n";
+						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag + " " +
+							e->text[1] + " Move to " + e->text[3] + " as " + e->text[2] + " -> Fail\r\n";
 						break;
 					}
 					case error::errorSP:

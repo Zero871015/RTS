@@ -135,6 +135,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Aircraft.cpp" />
     <ClCompile Include="BB.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="CarrierVessel.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="Torpedo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Aircraft.h" />
     <ClInclude Include="BB.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="CarrierVessel.h" />

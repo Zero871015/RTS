@@ -3,6 +3,7 @@
 ref class CarrierVessel :public Fleet
 {
 public:
-	CarrierVessel::CarrierVessel(System::String ^ name, System::Drawing::PointF ^ location);
+	CarrierVessel(System::String ^ name, System::Drawing::PointF ^ location);
+	bool specialAttack(System::Collections::Generic::List<Shell^>^ list, Fleet ^ target) override;
 };
 
