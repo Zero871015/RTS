@@ -7,9 +7,10 @@ Torpedo::Torpedo(System::Drawing::PointF ^ pos,float angle, System::String ^ nam
 {
 	this->angle = angle;
 	this->location = gcnew PointF(pos->X, pos->Y);
-	this->damage = 4;
+	this->damage = 2;
 	this->speed = (float)3.0 / 60;
-	this->name = name;
+	this->fleetName = name;
+	this->name = "Torpedo-" + name;
 }
 
 void Torpedo::Move()
@@ -31,13 +32,19 @@ void Torpedo::Draw(Graphics ^ g)
 		X - size / 2,
 		Y - size / 2,
 		size, size, 0.0, 360.0);
+	//µe¦W¦r
+	g->DrawString(this->name,
+		gcnew Font("Arial", 8),
+		Brushes::BlueViolet,
+		X + 10,
+		Y - 20);
 }
 
 void Torpedo::collision(System::Collections::Generic::Dictionary<System::String^, Fleet^>^ fleetList)
 {
 	for each (auto var in fleetList)
 	{
-		if (var.Key == this->name)
+		if (var.Key == this->fleetName)
 			continue;
 		float X = var.Value->getLocation()->X;
 		float Y = var.Value->getLocation()->Y;

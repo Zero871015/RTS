@@ -12,4 +12,4 @@ public:
 	Exceptions(array<String ^>^, int);
 };
 
-enum error { blankLine, errorCommand, errorSET, errorFIRE, errorDEFENSE, errorTAG, errorMOVE };
+enum error { blankLine, errorCommand, errorSET, errorFIRE, errorDEFENSE, errorTAG, errorMOVE, errorSP };

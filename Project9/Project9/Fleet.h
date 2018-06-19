@@ -18,7 +18,7 @@ public:
 	void Move();
 	bool Fire(System::Collections::Generic::List<Shell^>^ list, System::String ^,PointF ^ location);
 	int whereAmI();
-	void setMove(float speed, float angle);
+	bool setMove(float speed, float angle);
 	float getShellSpeed();
 	void setName(System::String ^);
 	PointF ^ getLocation();
@@ -27,6 +27,7 @@ public:
 	System::String ^ getName();
 	System::String ^ showAttackCD();
 	System::String ^ showDefenseCD();
+	System::String ^ showSpecialCD();
 	void UpdataCD();
 	bool Defense(System::String ^ shellName, System::Collections::Generic::List<Shell^>^ list);
 	void SetDefenseCD();

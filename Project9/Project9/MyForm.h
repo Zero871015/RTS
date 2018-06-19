@@ -234,9 +234,11 @@ namespace Project9 {
 			// 
 			// BtnColorA
 			// 
+			this->BtnColorA->Font = (gcnew System::Drawing::Font(L"Agency FB", 10.2F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 			this->BtnColorA->Location = System::Drawing::Point(30, 23);
 			this->BtnColorA->Name = L"BtnColorA";
-			this->BtnColorA->Size = System::Drawing::Size(125, 45);
+			this->BtnColorA->Size = System::Drawing::Size(165, 45);
 			this->BtnColorA->TabIndex = 6;
 			this->BtnColorA->Text = L"Change TeamA Color";
 			this->BtnColorA->UseVisualStyleBackColor = true;
@@ -244,9 +246,11 @@ namespace Project9 {
 			// 
 			// BtnColorB
 			// 
+			this->BtnColorB->Font = (gcnew System::Drawing::Font(L"Agency FB", 10.2F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 			this->BtnColorB->Location = System::Drawing::Point(30, 74);
 			this->BtnColorB->Name = L"BtnColorB";
-			this->BtnColorB->Size = System::Drawing::Size(125, 45);
+			this->BtnColorB->Size = System::Drawing::Size(165, 45);
 			this->BtnColorB->TabIndex = 6;
 			this->BtnColorB->Text = L"Change TeamB Color";
 			this->BtnColorB->UseVisualStyleBackColor = true;
@@ -269,9 +273,9 @@ namespace Project9 {
 			this->FleetDetailBox->Controls->Add(this->lblHP);
 			this->FleetDetailBox->Controls->Add(this->lblLocation);
 			this->FleetDetailBox->Controls->Add(this->lblName);
-			this->FleetDetailBox->Location = System::Drawing::Point(162, 23);
+			this->FleetDetailBox->Location = System::Drawing::Point(201, 23);
 			this->FleetDetailBox->Name = L"FleetDetailBox";
-			this->FleetDetailBox->Size = System::Drawing::Size(463, 101);
+			this->FleetDetailBox->Size = System::Drawing::Size(424, 101);
 			this->FleetDetailBox->TabIndex = 8;
 			this->FleetDetailBox->TabStop = false;
 			this->FleetDetailBox->Text = L"Fleet Detail";
@@ -279,7 +283,7 @@ namespace Project9 {
 			// lblDCD
 			// 
 			this->lblDCD->AutoSize = true;
-			this->lblDCD->Location = System::Drawing::Point(330, 71);
+			this->lblDCD->Location = System::Drawing::Point(312, 71);
 			this->lblDCD->Name = L"lblDCD";
 			this->lblDCD->Size = System::Drawing::Size(62, 15);
 			this->lblDCD->TabIndex = 4;
@@ -288,7 +292,7 @@ namespace Project9 {
 			// lblACD
 			// 
 			this->lblACD->AutoSize = true;
-			this->lblACD->Location = System::Drawing::Point(330, 25);
+			this->lblACD->Location = System::Drawing::Point(312, 25);
 			this->lblACD->Name = L"lblACD";
 			this->lblACD->Size = System::Drawing::Size(62, 15);
 			this->lblACD->TabIndex = 4;
@@ -426,6 +430,10 @@ namespace Project9 {
 								throw gcnew Exceptions(words, error::errorCommand);
 							if (team->fleetList->ContainsKey(words[1]) == true) // ¬Û¦P²îÄ¥¦W¦r
 								throw gcnew Exceptions(words, error::errorSET);
+							if (float::Parse(words[3]) < 0 || float::Parse(words[3]) > 20 || float::Parse(words[4]) < 0 || float::Parse(words[4]) > 20)
+							{
+								throw gcnew Exceptions(words, error::errorSET);
+							}
 							if (words[2] == "CV")
 							{
 								team->fleetList->Add(words[1], gcnew CarrierVessel(words[1],
@@ -566,9 +574,15 @@ namespace Project9 {
 						{
 							if (team->fleetList->ContainsKey(words[1]))
 							{
-								team->fleetList[words[1]]->setMove(float::Parse(words[2]), float::Parse(words[3]));
+								if (team->fleetList[words[1]]->setMove(float::Parse(words[2]), float::Parse(words[3])))
+								{
 								Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
 									words[1] + " Move to " + words[3] + " as " + words[2] + " -> Success\r\n";
+								}
+								else
+								{
+									throw gcnew Exceptions(words, error::errorMOVE);
+								}
 							}
 							else
 							{
@@ -591,9 +605,17 @@ namespace Project9 {
 								{
 									if (allIsDigit(words[2]) == false)
 										throw gcnew Exceptions(words, error::errorCommand);
-									team->fleetList[words[1]]->specialAttack(
+									if (team->fleetList[words[1]]->specialAttack(
 										team->shellList,
-										float::Parse(words[2]));
+										float::Parse(words[2])))
+									{
+										Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+											" " + words[1] + "SpecialAttack -> Success\r\n";
+									}
+									else
+									{
+										throw gcnew Exceptions(words, error::errorSP);
+									}
 								}
 								else
 								{
@@ -650,6 +672,11 @@ namespace Project9 {
 						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
 							e->text[1] + " Move to " + e->text[2] + " as " + e->text[3] + " -> Fail\r\n";
 						break;
+					}
+					case error::errorSP:
+					{
+						Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+							" " + e->text[1] + "SpecialAttack -> Fail\r\n";
 					}
 					default:
 						break;
@@ -957,6 +984,7 @@ namespace Project9 {
 				lblLocation->Text = "X: " + (temp->getLocation()->X - 1) + " , Y: " + (temp->getLocation()->Y - 1);
 				lblACD->Text = "ACD: " + temp->showAttackCD();
 				lblDCD->Text = "DCD: " + temp->showDefenseCD();
+				lblSCD->Text = "SCD: " + temp->showSpecialCD();
 				temp->isDrawBig = true;
 			}
 			else

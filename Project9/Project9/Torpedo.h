@@ -13,5 +13,6 @@ public:
 private:
 	float angle;
 	float speed;
+	System::String ^ fleetName;
 };
 

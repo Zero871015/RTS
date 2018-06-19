@@ -12,7 +12,7 @@ Fleet::Fleet()
 	this->defenseCDNow = 0;
 	this->isDrawBig = false;
 	this->type = 0;
-	this->specialCD = 1;
+	this->specialCD = 60;
 	this->specialCDNow = 0;
 }
 
@@ -26,7 +26,7 @@ Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
 	this->defenseCDNow = 0;
 	this->isDrawBig = false;
 	this->type = 0;
-	this->specialCD = 1;
+	this->specialCD = 60;
 	this->specialCDNow = 0;
 }
 
@@ -114,16 +114,16 @@ int Fleet::whereAmI()
 	return Board::getBoard(this->location->X, this->location->Y);
 }
 
-void Fleet::setMove(float speed, float angle)
+bool Fleet::setMove(float speed, float angle)
 {
 	//設定速度過快
 	if (speed > this->maxSpeed)
 	{
-		speed = this->maxSpeed;
-		System::Diagnostics::Debug::WriteLine("超出最大移動速度，強制降速");
+		return false;
 	}
 	this->speed = speed;
 	this->angle = angle;
+	return true;
 }
 
 float Fleet::getShellSpeed()
@@ -169,6 +169,14 @@ System::String ^ Fleet::showDefenseCD()
 	System::String ^ str;
 	str = (this->defenseCDNow >= 0) ? (this->defenseCD - this->defenseCDNow).ToString() : this->defenseCD.ToString();
 	str += " / " + this->defenseCD.ToString();
+	return str;
+}
+
+System::String ^ Fleet::showSpecialCD()
+{
+	System::String ^ str;
+	str = (this->specialCDNow >= 0) ? (this->specialCD - this->specialCDNow).ToString() : this->specialCD.ToString();
+	str += " / " + this->specialCD.ToString();
 	return str;
 }
 
