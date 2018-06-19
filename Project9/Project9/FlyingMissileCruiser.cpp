@@ -11,4 +11,5 @@ FlyingMissileCruiser::FlyingMissileCruiser(System::String ^ name, System::Drawin
 	this->defenseCD = 30;
 	this->damage = 3;
 	this->shellSpeed = (float)2.0/60;
+	this->type = 3;
 }

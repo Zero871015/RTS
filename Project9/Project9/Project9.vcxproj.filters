@@ -45,6 +45,9 @@
     <ClCompile Include="Exceptions.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="Torpedo.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyForm.h">
@@ -75,6 +78,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Exceptions.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Torpedo.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

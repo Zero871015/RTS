@@ -10,6 +10,10 @@ Fleet::Fleet()
 	this->shellSpeed = (float)0.1;
 	this->attackCDNow = 0;
 	this->defenseCDNow = 0;
+	this->isDrawBig = false;
+	this->type = 0;
+	this->specialCD = 1;
+	this->specialCDNow = 0;
 }
 
 Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
@@ -20,6 +24,10 @@ Fleet::Fleet(System::String ^ name, System::Drawing::PointF ^ location)
 	this->shellSpeed = (float)0.1;
 	this->attackCDNow = 0;
 	this->defenseCDNow = 0;
+	this->isDrawBig = false;
+	this->type = 0;
+	this->specialCD = 1;
+	this->specialCDNow = 0;
 }
 
 void Fleet::Draw(Graphics ^ g, System::Drawing::Color color)
@@ -39,6 +47,18 @@ void Fleet::Draw(Graphics ^ g, System::Drawing::Color color)
 		Brushes::Black,
 		X + 10,
 		Y - 20);
+}
+
+void Fleet::DrawBig(Graphics ^ g)
+{
+	float X = this->location->X * 20;
+	float Y = this->location->Y * 20;
+	float size = 13;
+	//畫三角形
+	array<PointF>^ curvePoints = { PointF(X,Y - size),
+		PointF(X - size / 2 * sqrtf(3),Y + size / 2) ,
+		PointF(X + size / 2 * sqrtf(3),Y + size / 2) };
+	g->FillPolygon(gcnew SolidBrush(Color::Red), curvePoints);
 }
 
 void Fleet::Move()
@@ -156,6 +176,7 @@ void Fleet::UpdataCD()
 {
 	this->attackCDNow--;
 	this->defenseCDNow--;
+	this->specialCDNow--;
 }
 
 bool Fleet::Defense(System::String ^ shellName, System::Collections::Generic::List<Shell^>^ list)
@@ -181,4 +202,19 @@ bool Fleet::Defense(System::String ^ shellName, System::Collections::Generic::Li
 void Fleet::SetDefenseCD()
 {
 	this->defenseCDNow = this->defenseCD;
+}
+
+int Fleet::whoAmI()
+{
+	//1=CV
+	//2=BB
+	//3=CG
+	//4=DD
+	//應該改用enum，不過我懶了
+	return this->type;
+}
+
+bool Fleet::specialAttack(System::Collections::Generic::List<Shell^>^ list, float angle)
+{
+	return false;
 }

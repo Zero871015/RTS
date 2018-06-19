@@ -145,6 +145,7 @@
     <ClCompile Include="MyForm.cpp" />
     <ClCompile Include="Shell.cpp" />
     <ClCompile Include="Team.cpp" />
+    <ClCompile Include="Torpedo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BB.h" />
@@ -159,6 +160,7 @@
     </ClInclude>
     <ClInclude Include="Shell.h" />
     <ClInclude Include="Team.h" />
+    <ClInclude Include="Torpedo.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MyForm.resx">

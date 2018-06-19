@@ -1,4 +1,5 @@
 #include "Shell.h"
+#include "Fleet.h"
 #include <cmath>
 
 using namespace System::Drawing;
@@ -79,6 +80,11 @@ void Shell::Move()
 		this->location->X += this->speed * X / D;
 		this->location->Y += this->speed * Y / D;
 	}
+}
+
+void Shell::collision(System::Collections::Generic::Dictionary<System::String ^, Fleet ^>^ fleetList)
+{
+	return;
 }
 
 bool Shell::getIsBoom()

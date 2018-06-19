@@ -11,4 +11,5 @@ BB::BB(System::String ^ name, System::Drawing::PointF ^ location) :Fleet(name, l
 	this->defenseCD = 30;
 	this->damage = 3;
 	this->shellSpeed = (float)2.0/60;
+	this->type = 2;
 }

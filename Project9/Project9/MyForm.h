@@ -52,9 +52,6 @@ namespace Project9 {
 	private: System::Windows::Forms::ColorDialog^  colorDialogFleetA;
 	private: System::Windows::Forms::Button^  BtnColorA;
 	private: System::Windows::Forms::Button^  BtnColorB;
-
-
-
 	private: System::Windows::Forms::ColorDialog^  colorDialogFleetB;
 	private: System::Windows::Forms::PictureBox^  pictureBox1;
 	private: System::Windows::Forms::GroupBox^  FleetDetailBox;
@@ -63,9 +60,7 @@ namespace Project9 {
 	private: System::Windows::Forms::Label^  lblSCD;
 	private: System::Windows::Forms::Label^  lblHP;
 	private: System::Windows::Forms::Label^  lblLocation;
-
 	private: System::Windows::Forms::Label^  lblName;
-
 	private: System::Windows::Forms::Button^  BtnPause;
 	public:
 
@@ -381,7 +376,7 @@ namespace Project9 {
 		{
 			for (int i = 0; i < number->Length; i++)
 			{
-				if (isdigit(number[i]) == false)
+				if (isdigit(number[i]) == false&&number[i]!='.')
 					return false;
 			}
 			return true;
@@ -585,6 +580,32 @@ namespace Project9 {
 							throw gcnew Exceptions(words, error::errorCommand);
 						}
 					}
+					else if (words[0] == "SP")
+					{
+						if (team->fleetList->ContainsKey(words[1]))
+						{
+							//DD魚雷
+							if (team->fleetList[words[1]]->whoAmI() == 4)
+							{
+								if (words->Length == 3)
+								{
+									if (allIsDigit(words[2]) == false)
+										throw gcnew Exceptions(words, error::errorCommand);
+									team->fleetList[words[1]]->specialAttack(
+										team->shellList,
+										float::Parse(words[2]));
+								}
+								else
+								{
+									throw gcnew Exceptions(words, error::errorCommand);
+								}
+							}
+						}
+						else
+						{
+							throw gcnew Exceptions(words, error::errorCommand);
+						}
+					}
 				}
 				catch (Exceptions ^e)
 				{
@@ -641,302 +662,313 @@ namespace Project9 {
 			}
 
 		}
-	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e) {
-	}
-	private: System::Void MyForm_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
+		private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e) {
+		}
+		private: System::Void MyForm_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
 		
-	}
-	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
+		}
+		private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
-		//計數器顯示
-		static int S = 0;
-		static int M = 0;
-		S++;
-		if (S > 59)
-		{
-			S = 0;
-			M++;
-		}
-		if (M < 10)lblTime->Text = "0";
-		else lblTime->Text = "";
-		lblTime->Text += M + ":";
-		if (S < 10)lblTime->Text += "0";
-		lblTime->Text += S;
-
-		//更新所有船艦冷卻時間
-		for each (auto var in team1.fleetList)
-		{
-			var.Value->UpdataCD();
-		}
-		for each (auto var in team2.fleetList)
-		{
-			var.Value->UpdataCD();
-		}
-
-		//迭代器讓所有船隻移動
-		for each (auto var in team1.fleetList)
-		{
-			var.Value->Move();
-		}
-		for each (auto var in team2.fleetList)
-		{
-			var.Value->Move();
-		}
-
-		//迭代器讓所有砲彈移動
-		for each (Shell^ var in team1.shellList)
-		{
-			var->Move();
-		}
-		for each (Shell^ var in team2.shellList)
-		{
-			var->Move();
-		}
-
-		team1.bufferShellList = gcnew System::Collections::Generic::List<Shell^>(team1.shellList);
-		team2.bufferShellList = gcnew System::Collections::Generic::List<Shell^>(team2.shellList);
-		//若是砲彈到達定位，爆炸並造成傷害
-		for each (Shell^ var in team1.shellList)
-		{
-			if (var->getIsBoom())
+			//計數器顯示
+			static int S = 0;
+			static int M = 0;
+			S++;
+			if (S > 59)
 			{
-				System::Collections::Generic::List<System::String ^>^ fleetsName = gcnew System::Collections::Generic::List<System::String ^>;
-				for each (auto fleet in team1.fleetList)
+				S = 0;
+				M++;
+			}
+			if (M < 10)lblTime->Text = "0";
+			else lblTime->Text = "";
+			lblTime->Text += M + ":";
+			if (S < 10)lblTime->Text += "0";
+			lblTime->Text += S;
+
+			//更新所有船艦冷卻時間
+			for each (auto var in team1.fleetList)
+			{
+				var.Value->UpdataCD();
+			}
+			for each (auto var in team2.fleetList)
+			{
+				var.Value->UpdataCD();
+			}
+
+			//迭代器讓所有船隻移動
+			for each (auto var in team1.fleetList)
+			{
+				var.Value->Move();
+			}
+			for each (auto var in team2.fleetList)
+			{
+				var.Value->Move();
+			}
+
+			//迭代器讓所有砲彈移動
+			for each (Shell^ var in team1.shellList)
+			{
+				var->Move();
+				var->collision(team1.fleetList);
+				var->collision(team2.fleetList);
+			}
+			for each (Shell^ var in team2.shellList)
+			{
+				var->Move();
+				var->collision(team1.fleetList);
+				var->collision(team2.fleetList);
+			}
+
+			team1.bufferShellList = gcnew System::Collections::Generic::List<Shell^>(team1.shellList);
+			team2.bufferShellList = gcnew System::Collections::Generic::List<Shell^>(team2.shellList);
+			//若是砲彈到達定位，爆炸並造成傷害
+			for each (Shell^ var in team1.shellList)
+			{
+				if (var->getIsBoom())
 				{
-					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
-						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
-					if (dis < 1.5)
+					System::Collections::Generic::List<System::String ^>^ fleetsName = gcnew System::Collections::Generic::List<System::String ^>;
+					for each (auto fleet in team1.fleetList)
 					{
-						fleetsName->Add(gcnew System::String("TeamA " + fleet.Key));
-						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
-						System::Diagnostics::Debug::WriteLine("擊中船艦");
+						float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
+							powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
+						if (dis < 1.5)
+						{
+							fleetsName->Add(gcnew System::String("TeamA " + fleet.Key));
+							fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
+							System::Diagnostics::Debug::WriteLine("擊中船艦");
+						}
 					}
-				}
-				for each (auto fleet in team2.fleetList)
-				{
-					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
-						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
-					if (dis < 1.5)
+					for each (auto fleet in team2.fleetList)
 					{
-						fleetsName->Add(gcnew System::String("TeamB " + fleet.Key));
-						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
-						System::Diagnostics::Debug::WriteLine("擊中船艦");
+						float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
+							powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
+						if (dis < 1.5)
+						{
+							fleetsName->Add(gcnew System::String("TeamB " + fleet.Key));
+							fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
+							System::Diagnostics::Debug::WriteLine("擊中船艦");
+						}
 					}
-				}
-				//砲彈命中與否Log
-				if (fleetsName->Count != 0)
-				{
-					Log->Text += "[" + lblTime->Text + "] " + var->getName() +
-						" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> hit {";
-					for (int i = 0; i < fleetsName->Count; i++)
+					//砲彈命中與否Log
+					if (fleetsName->Count != 0)
 					{
-						if (i != fleetsName->Count - 1)
-							Log->Text += fleetsName[i] + ", ";
-						else
-							Log->Text += fleetsName[i] + "}\r\n";
+						Log->Text += "[" + lblTime->Text + "] " + var->getName() +
+							" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> hit {";
+						for (int i = 0; i < fleetsName->Count; i++)
+						{
+							if (i != fleetsName->Count - 1)
+								Log->Text += fleetsName[i] + ", ";
+							else
+								Log->Text += fleetsName[i] + "}\r\n";
+						}
 					}
+					else
+					{
+						Log->Text += "[" + lblTime->Text + "] " + var->getName() +
+							" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> miss\r\n";
+					}
+					team1.bufferShellList->Remove(var);
 				}
-				else
+			}
+			for each (Shell^ var in team2.shellList)
+			{
+				if (var->getIsBoom())
 				{
-					Log->Text += "[" + lblTime->Text + "] " + var->getName() +
-						" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> miss\r\n";
+					System::Collections::Generic::List<System::String ^>^ fleetsName = gcnew System::Collections::Generic::List<System::String ^>;
+					for each (auto fleet in team1.fleetList)
+					{
+						float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
+							powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
+						if (dis < 1.5)
+						{
+							fleetsName->Add(gcnew System::String("TeamA " + fleet.Key));
+							fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
+							System::Diagnostics::Debug::WriteLine("擊中船艦");
+						}
+					}
+					for each (auto fleet in team2.fleetList)
+					{
+						float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
+							powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
+						if (dis < 1.5)
+						{
+							fleetsName->Add(gcnew System::String("TeamB " + fleet.Key));
+							fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
+							System::Diagnostics::Debug::WriteLine("擊中船艦");
+						}
+					}
+					//砲彈命中與否Log
+					if (fleetsName->Count != 0)
+					{
+						Log->Text += "[" + lblTime->Text + "] " + var->getName() +
+							" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> hit {";
+						for (int i = 0; i < fleetsName->Count; i++)
+						{
+							if (i != fleetsName->Count - 1)
+								Log->Text += fleetsName[i] + ", ";
+							else
+								Log->Text += fleetsName[i] + "}\r\n";
+						}
+					}
+					else
+					{
+						Log->Text += "[" + lblTime->Text + "] " + var->getName() +
+							" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> miss\r\n";
+					}
+					team2.bufferShellList->Remove(var);
 				}
-				team1.bufferShellList->Remove(var);
+			}
+			team1.shellList = team1.bufferShellList;
+			team2.shellList = team2.bufferShellList;
+
+			System::Collections::Generic::Dictionary<System::String ^, Fleet ^>^ temp;
+			//檢查是否有船艦被擊沉
+			temp = gcnew System::Collections::Generic::Dictionary<System::String ^, Fleet ^>(team1.fleetList);
+			for each (auto var in temp)
+			{
+				if (var.Value->getHP() <= 0)
+				{
+					team1.fleetList->Remove(var.Key);
+					System::Diagnostics::Debug::WriteLine("船艦被擊沉");
+					Log->Text += "[" + lblTime->Text + "]" + " TeamA " +
+						var.Key + " destoryed\r\n";
+				}
+			}
+			temp = gcnew System::Collections::Generic::Dictionary<System::String ^, Fleet ^>(team2.fleetList);
+			for each (auto var in temp)
+			{
+				if (var.Value->getHP() <= 0)
+				{
+					team2.fleetList->Remove(var.Key);
+					System::Diagnostics::Debug::WriteLine("船艦被擊沉");
+					Log->Text += "[" + lblTime->Text + "]" + " TeamB " +
+						var.Key + " destoryed\r\n";
+				}
+			}
+
+			UpdateCanvas();		//更新畫布
+		}
+
+		private: System::Void UpdateCanvas()
+		{
+			g->Clear(System::Drawing::Color::White);	//先清空畫布
+
+			myBoard.Draw(g);	//重畫地圖
+
+								//畫船
+			for each (auto var in team1.fleetList)
+			{
+				var.Value->Draw(g, colorDialogFleetA->Color);
+				if (var.Value->isDrawBig)
+					var.Value->DrawBig(g);
+			}
+			for each (auto var in team2.fleetList)
+			{
+				var.Value->Draw(g, colorDialogFleetB->Color);
+				if (var.Value->isDrawBig)
+					var.Value->DrawBig(g);
+			}
+
+			//畫砲
+			for each (Shell^ var in team1.shellList)
+			{
+				var->Draw(g);
+			}
+			for each (Shell^ var in team2.shellList)
+			{
+				var->Draw(g);
+			}
+
+			pictureBox1->Image = bitmap;
+		}
+		private: System::Void BtnStart_Click(System::Object^  sender, System::EventArgs^  e) {
+			ReadCommand(textBox1, %team1);
+			ReadCommand(textBox2, %team2);
+			timer1->Enabled = true;
+			BtnPause->Enabled = true;
+			BtnStart->Enabled = false;
+			BtnNextSec->Enabled = false;
+			textBox1->ReadOnly = true;
+			textBox2->ReadOnly = true;
+		}
+		private: System::Void BtnPause_Click(System::Object^  sender, System::EventArgs^  e) {
+			textBox1->Text = "";
+			textBox2->Text = "";
+
+			timer1->Enabled = false;
+			BtnStart->Enabled = true;
+			BtnPause->Enabled = false;
+			BtnNextSec->Enabled = true;
+			textBox1->ReadOnly = false;
+			textBox2->ReadOnly = false;
+		}
+		private: System::Void BtnClearLog_Click(System::Object^  sender, System::EventArgs^  e) {
+			Log->Text = "";
+		}
+		private: System::Void BtnColorFleetA_Click(System::Object^  sender, System::EventArgs^  e) {
+			if (colorDialogFleetA->ShowDialog() == ::System::Windows::Forms::DialogResult::OK)
+			{
+				System::Diagnostics::Debug::WriteLine("改變顏色");
+				UpdateCanvas();
 			}
 		}
-		for each (Shell^ var in team2.shellList)
-		{
-			if (var->getIsBoom())
+		private: System::Void BtnColorFleetB_Click(System::Object^  sender, System::EventArgs^  e) {
+			if (colorDialogFleetB->ShowDialog() == ::System::Windows::Forms::DialogResult::OK)
 			{
-				System::Collections::Generic::List<System::String ^>^ fleetsName = gcnew System::Collections::Generic::List<System::String ^>;
-				for each (auto fleet in team1.fleetList)
-				{
-					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
-						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
-					if (dis < 1.5)
-					{
-						fleetsName->Add(gcnew System::String("TeamA " + fleet.Key));
-						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
-						System::Diagnostics::Debug::WriteLine("擊中船艦");
-					}
-				}
-				for each (auto fleet in team2.fleetList)
-				{
-					float dis = sqrt(powf(var->getLocation()->X - fleet.Value->getLocation()->X, 2) +
-						powf(var->getLocation()->Y - fleet.Value->getLocation()->Y, 2));
-					if (dis < 1.5)
-					{
-						fleetsName->Add(gcnew System::String("TeamB " + fleet.Key));
-						fleet.Value->setHP(fleet.Value->getHP() - var->getDamage());
-						System::Diagnostics::Debug::WriteLine("擊中船艦");
-					}
-				}
-				//砲彈命中與否Log
-				if (fleetsName->Count != 0)
-				{
-					Log->Text += "[" + lblTime->Text + "] " + var->getName() +
-						" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> hit {";
-					for (int i = 0; i < fleetsName->Count; i++)
-					{
-						if (i != fleetsName->Count - 1)
-							Log->Text += fleetsName[i] + ", ";
-						else
-							Log->Text += fleetsName[i] + "}\r\n";
-					}
-				}
-				else
-				{
-					Log->Text += "[" + lblTime->Text + "] " + var->getName() +
-						" arrived (" + (var->getLocation()->X - 1) + "," + (var->getLocation()->Y - 1) + ") -> miss\r\n";
-				}
-				team2.bufferShellList->Remove(var);
+				System::Diagnostics::Debug::WriteLine("改變顏色");
+				UpdateCanvas();
 			}
 		}
-		team1.shellList = team1.bufferShellList;
-		team2.shellList = team2.bufferShellList;
+		private: System::Void pictureBox1_MouseMove(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+			float mapX, mapY;
+			mapX = e->Location.X / (float)20.0;
+			mapY = e->Location.Y / (float)20.0;
+			this->Text = mapX + "," + mapY;
 
-		System::Collections::Generic::Dictionary<System::String ^, Fleet ^>^ temp;
-		//檢查是否有船艦被擊沉
-		temp = gcnew System::Collections::Generic::Dictionary<System::String ^, Fleet ^>(team1.fleetList);
-		for each (auto var in temp)
-		{
-			if (var.Value->getHP() <= 0)
+			Fleet ^ temp;
+			float minDis = 600;
+			for each (auto var in team1.fleetList)
 			{
-				team1.fleetList->Remove(var.Key);
-				System::Diagnostics::Debug::WriteLine("船艦被擊沉");
-				Log->Text += "[" + lblTime->Text + "]" + " TeamA " +
-					var.Key + " destoryed\r\n";
+				var.Value->isDrawBig = false;
+				float X = var.Value->getLocation()->X;
+				float Y = var.Value->getLocation()->Y;
+				float dis = sqrt(pow((X - mapX), 2) + pow((Y - mapY), 2));
+				if (minDis > dis)
+				{
+					minDis = dis;
+					temp = var.Value;
+				}
 			}
-		}
-		temp = gcnew System::Collections::Generic::Dictionary<System::String ^, Fleet ^>(team2.fleetList);
-		for each (auto var in temp)
-		{
-			if (var.Value->getHP() <= 0)
+			for each (auto var in team2.fleetList)
 			{
-				team2.fleetList->Remove(var.Key);
-				System::Diagnostics::Debug::WriteLine("船艦被擊沉");
-				Log->Text += "[" + lblTime->Text + "]" + " TeamB " +
-					var.Key + " destoryed\r\n";
+				var.Value->isDrawBig = false;
+				float X = var.Value->getLocation()->X;
+				float Y = var.Value->getLocation()->Y;
+				float dis = sqrt(pow((X - mapX), 2) + pow((Y - mapY), 2));
+				if (minDis > dis)
+				{
+					minDis = dis;
+					temp = var.Value;
+				}
 			}
-		}
-
-		UpdateCanvas();		//更新畫布
-		//this->Refresh();	//call My_Form Paint
-	}
-
-	private: System::Void UpdateCanvas()
-	{
-		g->Clear(System::Drawing::Color::White);	//先清空畫布
-
-		myBoard.Draw(g);	//重畫地圖
-
-							//畫船
-		for each (auto var in team1.fleetList)
-		{
-			var.Value->Draw(g, colorDialogFleetA->Color);
-		}
-		for each (auto var in team2.fleetList)
-		{
-			var.Value->Draw(g, colorDialogFleetB->Color);
-		}
-
-		//畫砲
-		for each (Shell^ var in team1.shellList)
-		{
-			var->Draw(g);
-		}
-		for each (Shell^ var in team2.shellList)
-		{
-			var->Draw(g);
-		}
-
-		pictureBox1->Image = bitmap;
-	}
-	private: System::Void BtnStart_Click(System::Object^  sender, System::EventArgs^  e) {
-		ReadCommand(textBox1, %team1);
-		ReadCommand(textBox2, %team2);
-		timer1->Enabled = true;
-		BtnPause->Enabled = true;
-		BtnStart->Enabled = false;
-		BtnNextSec->Enabled = false;
-		textBox1->ReadOnly = true;
-		textBox2->ReadOnly = true;
-	}
-	private: System::Void BtnPause_Click(System::Object^  sender, System::EventArgs^  e) {
-		textBox1->Text = "";
-		textBox2->Text = "";
-
-		timer1->Enabled = false;
-		BtnStart->Enabled = true;
-		BtnPause->Enabled = false;
-		BtnNextSec->Enabled = true;
-		textBox1->ReadOnly = false;
-		textBox2->ReadOnly = false;
-	}
-	private: System::Void BtnClearLog_Click(System::Object^  sender, System::EventArgs^  e) {
-		Log->Text = "";
-	}
-	private: System::Void BtnColorFleetA_Click(System::Object^  sender, System::EventArgs^  e) {
-		if (colorDialogFleetA->ShowDialog() == ::System::Windows::Forms::DialogResult::OK)
-		{
-			System::Diagnostics::Debug::WriteLine("改變顏色");
+			if (temp&&minDis < 0.5)
+			{
+				lblName->Text = "Name: " + temp->getName();
+				lblHP->Text = "HP: " + temp->getHP();
+				lblLocation->Text = "X: " + (temp->getLocation()->X - 1) + " , Y: " + (temp->getLocation()->Y - 1);
+				lblACD->Text = "ACD: " + temp->showAttackCD();
+				lblDCD->Text = "DCD: " + temp->showDefenseCD();
+				temp->isDrawBig = true;
+			}
+			else
+			{
+				lblName->Text = "Name: ???";
+				lblHP->Text = "HP: ???";
+				lblACD->Text = "ACD: ???";
+				lblDCD->Text = "DCD: ???";
+				lblLocation->Text = "Location: ???";
+				lblSCD->Text = "SCD: ???";
+			}
 			UpdateCanvas();
 		}
-	}
-	private: System::Void BtnColorFleetB_Click(System::Object^  sender, System::EventArgs^  e) {
-		if (colorDialogFleetB->ShowDialog() == ::System::Windows::Forms::DialogResult::OK)
-		{
-			System::Diagnostics::Debug::WriteLine("改變顏色");
-			UpdateCanvas();
-		}
-	}
-	private: System::Void pictureBox1_MouseMove(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
-		float mapX, mapY;
-		mapX = e->Location.X / (float)20.0;
-		mapY = e->Location.Y / (float)20.0;
-		this->Text = mapX + "," + mapY;
-
-		Fleet ^ temp;
-		float minDis = 600;
-		for each (auto var in team1.fleetList)
-		{
-			float X = var.Value->getLocation()->X;
-			float Y = var.Value->getLocation()->Y;
-			float dis = sqrt(pow((X - mapX), 2) + pow((Y - mapY), 2));
-			if (minDis > dis)
-			{
-				minDis = dis;
-				temp = var.Value;
-			}
-		}
-		for each (auto var in team2.fleetList)
-		{
-			float X = var.Value->getLocation()->X;
-			float Y = var.Value->getLocation()->Y;
-			float dis = sqrt(pow((X - mapX), 2) + pow((Y - mapY), 2));
-			if (minDis > dis)
-			{
-				minDis = dis;
-				temp = var.Value;
-			}
-		}
-		if (temp&&minDis < 0.5)
-		{
-			lblName->Text = "Name: " + temp->getName();
-			lblHP->Text = "HP: " + temp->getHP();
-			lblLocation->Text = "X: " + (temp->getLocation()->X - 1) + " , Y: " + (temp->getLocation()->Y - 1);
-			lblACD->Text = "ACD: " + temp->showAttackCD();
-			lblDCD->Text = "DCD: " + temp->showDefenseCD();
-		}
-		else
-		{
-			lblName->Text = "Name: ???";
-			lblHP->Text = "HP: ???";
-			lblACD->Text = "ACD: ???";
-			lblDCD->Text = "DCD: ???";
-			lblLocation->Text = "Location: ???";
-			lblSCD->Text = "SCD: ???";
-		}
-	}
-};
+	};
 }
