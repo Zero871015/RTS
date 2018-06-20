@@ -3,14 +3,26 @@
 #include <cmath>
 
 
-Torpedo::Torpedo(System::Drawing::PointF ^ pos,float angle, System::String ^ name)
+Torpedo::Torpedo(System::Drawing::PointF ^ pos,float angle, System::String ^ name, int type)
 {
-	this->angle = angle;
-	this->location = gcnew PointF(pos->X, pos->Y);
-	this->damage = 2;
-	this->speed = (float)3.0 / 60;
-	this->fleetName = name;
-	this->name = "Torpedo-" + name;
+	if (type != 2)
+	{
+		this->angle = angle;
+		this->location = gcnew PointF(pos->X, pos->Y);
+		this->damage = 2;
+		this->speed = (float)3.0 / 60;
+		this->fleetName = name;
+		this->name = "Torpedo-" + name;
+	}
+	else
+	{
+		this->angle = angle;
+		this->location = gcnew PointF(pos->X, pos->Y);
+		this->damage = 4;
+		this->speed = (float)5.0 / 60;
+		this->fleetName = name;
+		this->name = "Torpedo-" + name;
+	}
 }
 
 void Torpedo::Move()

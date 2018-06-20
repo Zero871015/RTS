@@ -494,7 +494,7 @@ namespace Project9 {
 									gcnew PointF(float::Parse(words[2]) + 1, float::Parse(words[3]) + 1)))
 								{
 									Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-										" " + words[1] + " Fire to (" + words[2] + "," + words[3] + ") -> " + "Shell" + textBox->Tag + team->count + "\r\n";
+										" " + words[1] + " Fire to (" + words[2] + "," + words[3] + ") -> " + "Shell" + "_" + textBox->Tag + team->count + "\r\n";
 									team->count++;
 								}
 								else
@@ -610,7 +610,7 @@ namespace Project9 {
 										float::Parse(words[2])))
 									{
 										Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-											" " + words[1] + "SpecialSkill -> Success\r\n";
+											" " + words[1] + " SpecialSkill -> Success\r\n";
 									}
 									else
 									{
@@ -630,7 +630,7 @@ namespace Project9 {
 									if (team->fleetList[words[1]]->specialAttack())
 									{
 										Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-											" " + words[1] + "SpecialSkill -> Success\r\n";
+											" " + words[1] + " SpecialSkill -> Success\r\n";
 									}
 									else
 									{
@@ -662,7 +662,31 @@ namespace Project9 {
 									if (tar)
 									{
 										Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
-											" " + words[1] + "SpecialSkill -> Success\r\n";
+											" " + words[1] + " SpecialSkill -> Success\r\n";
+									}
+									else
+									{
+										throw gcnew Exceptions(words, error::errorSP);
+									}
+								}
+								else
+								{
+									throw gcnew Exceptions(words, error::errorCommand);
+								}
+							}
+							//CG魚雷
+							else if (team->fleetList[words[1]]->whoAmI() == 3) 
+							{
+								if (words->Length == 3)
+								{
+									if (allIsDigit(words[2]) == false)
+										throw gcnew Exceptions(words, error::errorCommand);
+									if (team->fleetList[words[1]]->specialAttack(
+										team->shellList,
+										float::Parse(words[2])))
+									{
+										Log->Text += "[" + lblTime->Text + "]" + " Team" + textBox->Tag +
+											" " + words[1] + " SpecialSkill -> Success\r\n";
 									}
 									else
 									{
@@ -781,6 +805,27 @@ namespace Project9 {
 			for each (auto var in team2.fleetList)
 			{
 				var.Value->Move();
+			}
+			for each (auto var in team1.fleetList)
+			{
+				for each (auto fleet in team2.fleetList)
+				{
+					float dis;
+					dis = sqrt(pow((var.Value->getLocation()->X - fleet.Value->getLocation()->X), 2) +
+						pow((var.Value->getLocation()->Y - fleet.Value->getLocation()->Y), 2));
+					if (dis < 0.3)
+					{
+						int HP1, HP2;
+						HP1 = var.Value->getHP();
+						HP2 = fleet.Value->getHP();
+						if (HP1 > 0 || HP2 > 0)
+						{
+							Log->Text += "[" + lblTime->Text + "] " + var.Value->getName() + " " + fleet.Value->getName() + " on a collision course.\r\n";
+							var.Value->setHP(HP1 - HP2);
+							fleet.Value->setHP(HP2 - HP1);
+						}
+					}
+				}
 			}
 
 			//迭代器讓所有砲彈移動
@@ -1026,7 +1071,7 @@ namespace Project9 {
 			float mapX, mapY;
 			mapX = e->Location.X / (float)20.0;
 			mapY = e->Location.Y / (float)20.0;
-			this->Text = mapX + "," + mapY;
+			this->Text = (mapX-1) + "," + (mapY-1);
 
 			Fleet ^ temp;
 			float minDis = 600;

@@ -21,9 +21,9 @@ bool Destroyer::specialAttack(System::Collections::Generic::List<Shell^>^ list,f
 	if (this->specialCDNow <= 0)
 	{
 		this->specialCDNow = this->specialCD;
-		list->Add(gcnew Torpedo(this->location, angle, this->name));
-		list->Add(gcnew Torpedo(this->location, angle-10, this->name));
-		list->Add(gcnew Torpedo(this->location, angle+10, this->name));
+		list->Add(gcnew Torpedo(this->location, angle, this->name,1));
+		list->Add(gcnew Torpedo(this->location, angle-10, this->name,1));
+		list->Add(gcnew Torpedo(this->location, angle+10, this->name,1));
 		System::Diagnostics::Debug::WriteLine("µo®g³½¹p");
 		return true;
 	}

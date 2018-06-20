@@ -11,6 +11,7 @@ Aircraft::Aircraft(System::Drawing::PointF ^ pos, Fleet ^ target,float VX,float 
 	this->VY = VY;
 	this->damage = 1;
 	this->targetLocation = target->getLocation();
+	this->name = "Aircraft";
 }
 
 void Aircraft::Move()
